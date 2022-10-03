@@ -7,4 +7,13 @@ class GlobalProvider with ChangeNotifier {
     stackIndex = index;
     notifyListeners();
   }
+
+  void backButton(BuildContext context) {
+    if (stackIndex == 0) {
+      Navigator.pop(context);
+    } else {
+      stackIndex--;
+      notifyListeners();
+    }
+  }
 }

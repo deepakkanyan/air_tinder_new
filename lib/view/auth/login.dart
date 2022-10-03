@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
@@ -15,6 +16,7 @@ import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -90,7 +92,7 @@ class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
       showMsg(context, 'Field cannot be empty!');
     } else {
       try {
-        loading(context);
+        loadingDialog(context);
         await auth.signInWithEmailAndPassword(
           email: emailCon.text.trim(),
           password: passCon.text.trim(),

@@ -4,22 +4,28 @@ class UserDetailModel {
   String? fullName;
   String? gender;
   String? profileImgUrl;
-  List<String>? additionalImages = [];
+  List? additionalImages = [];
   String? dob;
-  List<String>? interests = [];
-  String? bio;
+  List? interests = [];
+  String? about;
+  Map<String,dynamic>? departureDetails;
+  Map<String,dynamic>? layoverDetails;
+  Map<String,dynamic>? landingDetails;
   String? createdAt;
 
   UserDetailModel({
     this.uId = '',
     this.email = '',
     this.fullName = '',
-    this.additionalImages,
     this.gender = '',
     this.profileImgUrl = '',
+    this.additionalImages,
     this.dob = '',
     this.interests,
-    this.bio = '',
+    this.about = '',
+    this.departureDetails,
+    this.layoverDetails,
+    this.landingDetails,
     this.createdAt = '',
   });
 
@@ -28,12 +34,15 @@ class UserDetailModel {
         uId: json['uId'],
         email: json['email'],
         fullName: json['fullName'],
-        additionalImages: json['additionalImages'],
         gender: json['gender'],
         profileImgUrl: json['profileImgUrl'],
+        additionalImages: json['additionalImages'],
         dob: json['dob'],
         interests: json['interests'],
-        bio: json['bio'],
+        about: json['about'],
+        departureDetails: json['departureDetails'],
+        layoverDetails: json['layoverDetails'],
+        landingDetails: json['landingDetails'],
         createdAt: json['createdAt'],
       );
 
@@ -41,11 +50,15 @@ class UserDetailModel {
         'uId': uId,
         'email': email,
         'fullName': fullName,
-        'additionalImages': additionalImages,
         'gender': gender,
+        'profileImgUrl': profileImgUrl,
+        'additionalImages': additionalImages,
         'dob': dob,
         'interests': interests,
-        'bio': bio,
+        'about': about,
+        'departureDetails': departureDetails,
+        'layoverDetails': layoverDetails,
+        'landingDetails': landingDetails,
         'createdAt': createdAt,
       };
 }

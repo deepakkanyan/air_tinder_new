@@ -31,7 +31,7 @@ class AddPhotos extends StatefulWidget {
 
 class _AddPhotosState extends State<AddPhotos> {
   TextEditingController dobCon = TextEditingController();
-  String profilePhoto = '';
+  String profileImage = '';
   List<String> additionalImages = [];
 
   File? _pickedProfileImage;
@@ -49,22 +49,22 @@ class _AddPhotosState extends State<AddPhotos> {
     return true;
   }
 
-  Future uploadData() async {
+  Future _uploadData() async {
     if (isValid) {
       try {
-        loading(context);
-        await uploadProfileImage();
+        loadingDialog(context);
+        await _uploadProfileImage();
         await profiles.doc(auth.currentUser!.uid).update({
-          'profileImage': profilePhoto,
+          'profileImage': profileImage,
           'dateOfBirth': dobCon.text,
         });
         Navigator.pop(context);
         Provider.of<GlobalProvider>(context, listen: false)
             .updateStackIndex(context, 1);
-        await uploadMultipleImage();
+        await _uploadMultipleImage();
         setState(() {
           _pickedProfileImage = null;
-          profilePhoto = '';
+          profileImage = '';
           _additionalImages = [];
           additionalImages = [];
           dobCon.clear();
@@ -92,7 +92,7 @@ class _AddPhotosState extends State<AddPhotos> {
     }
   }
 
-  Future uploadProfileImage() async {
+  Future _uploadProfileImage() async {
     Reference ref = await firebaseStorage.ref().child(
           'images/profile image/${DateTime.now().toString()}',
         );
@@ -100,7 +100,7 @@ class _AddPhotosState extends State<AddPhotos> {
     await ref.getDownloadURL().then((value) {
       log(value.toString());
       setState(() {
-        profilePhoto = value;
+        profileImage = value;
       });
     });
   }
@@ -120,7 +120,7 @@ class _AddPhotosState extends State<AddPhotos> {
     }
   }
 
-  Future uploadMultipleImage() async {
+  Future _uploadMultipleImage() async {
     for (int i = 0; i < _additionalImages.length; i++) {
       Reference ref = await firebaseStorage.ref().child(
             'images/profile images/${DateTime.now().toString()}',
@@ -137,12 +137,39 @@ class _AddPhotosState extends State<AddPhotos> {
     }
   }
 
-  void removePhoto(int index) {
+  void _removePhoto(int index) {
     setState(() {
       _additionalImages.removeWhere(
         (element) => element == _additionalImages[index],
       );
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileData();
+  }
+
+  void _fetchProfileData() async {
+    await profiles.doc(auth.currentUser!.uid).get().then(
+      (value) {
+        if (value.exists) {
+          setState(() {
+            Map<String, dynamic> _data = value.data() as Map<String, dynamic>;
+            profileImage = _data['profileImage'];
+            // additionalImages = _data['additionalImages'];
+            // dobCon = _data['dateOfBirth'];
+            log(profileImage.toString());
+          });
+        } else {
+          setState(() {
+            // additionalImages = [];
+            // dobCon.text = '';
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -195,20 +222,37 @@ class _AddPhotosState extends State<AddPhotos> {
                             },
                             isScrollControlled: true,
                           ),
-                          child: _pickedProfileImage != null
-                              ? Image.file(
-                                  File(_pickedProfileImage!.path),
+                          child: profileImage != ''
+                              ? Image.network(
+                                  profileImage,
                                   height: height(1.0, context),
                                   width: width(1.0, context),
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return loading(context);
+                                  },
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return loading(context);
+                                  },
                                 )
-                              : Image.asset(
-                                  Assets.imagesUser,
-                                  height: height(1.0, context),
-                                  width: width(1.0, context),
-                                  fit: BoxFit.cover,
-                                  color: kSecondaryColor,
-                                ),
+                              : _pickedProfileImage != null
+                                  ? Image.file(
+                                      File(_pickedProfileImage!.path),
+                                      height: height(1.0, context),
+                                      width: width(1.0, context),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      Assets.imagesUser,
+                                      height: height(1.0, context),
+                                      width: width(1.0, context),
+                                      fit: BoxFit.cover,
+                                      color: kSecondaryColor,
+                                    ),
                         ),
                       ),
                     ),
@@ -233,9 +277,16 @@ class _AddPhotosState extends State<AddPhotos> {
                     if (index < _additionalImages.length) {
                       return UploadPhoto(
                         index: index,
-                        onRemoveTap: () => removePhoto(index),
+                        onRemoveTap: () => _removePhoto(index),
                         onTap: _getMoreImages,
                         pickedImage: _additionalImages[index],
+                      );
+                    } else if (index < additionalImages.length) {
+                      return UploadPhoto(
+                        index: index,
+                        onRemoveTap: () => _removePhoto(index),
+                        onTap: _getMoreImages,
+                        imgURL: additionalImages[index],
                       );
                     } else {
                       return UploadPhoto(
@@ -280,7 +331,7 @@ class _AddPhotosState extends State<AddPhotos> {
             SizedBox(
               width: 167,
               child: MyButton(
-                onTap: uploadData,
+                onTap: _uploadData,
               ),
             ),
           ],

@@ -19,8 +19,9 @@ class Interest extends StatefulWidget {
 }
 
 class _InterestState extends State<Interest> {
-  List<InterestModels> selectedInterest = [];
-  List<InterestModels> interestList = [
+  List<String> interests = [];
+  List<InterestModels> _selectedInterest = [];
+  List<InterestModels> _interestList = [
     InterestModels(
       interest: 'Love',
     ),
@@ -122,30 +123,34 @@ class _InterestState extends State<Interest> {
   ) {
     setState(
       () {
-        var data = interestList[index];
+        var data = _interestList[index];
         data.isSelected = !data.isSelected!;
         if (data.isSelected == true) {
-          selectedInterest.add(
+          _selectedInterest.add(
             InterestModels(
               interest: interest,
               isSelected: true,
             ),
           );
+          interests.add(interest);
+          log(interests.toString());
         } else {
-          selectedInterest.removeWhere(
+          _selectedInterest.removeWhere(
             (element) => element.interest == data.interest,
           );
+          interests.removeWhere((element) => element == interest);
+          log(interests.toString());
         }
       },
     );
   }
 
   Future uploadData() async {
-    if (selectedInterest.isNotEmpty && selectedInterest.length >= 3) {
+    if (_selectedInterest.isNotEmpty && _selectedInterest.length >= 3) {
       try {
-        loading(context);
+        loadingDialog(context);
         await profiles.doc(auth.currentUser!.uid).update({
-          'interests': selectedInterest,
+          'interests': interests,
         });
         Navigator.pop(context);
         Provider.of<GlobalProvider>(context, listen: false)
@@ -181,9 +186,9 @@ class _InterestState extends State<Interest> {
                 spacing: 13,
                 runSpacing: 13,
                 children: List.generate(
-                  interestList.length,
+                  _interestList.length,
                   (index) {
-                    var data = interestList[index];
+                    var data = _interestList[index];
                     return InterestButtons(
                       interest: data.interest,
                       isSelected: data.isSelected,

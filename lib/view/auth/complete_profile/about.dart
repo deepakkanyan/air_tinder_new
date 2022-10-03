@@ -1,16 +1,45 @@
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
+import 'package:air_tinder/utils/collections.dart';
+import 'package:air_tinder/utils/custom_flush_bar.dart';
+import 'package:air_tinder/utils/instances.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/widget/headings.dart';
 import 'package:air_tinder/view/widget/my_button.dart';
 import 'package:air_tinder/view/widget/my_textfield.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class About extends StatelessWidget {
+class About extends StatefulWidget {
+  @override
+  State<About> createState() => _AboutState();
+}
+
+class _AboutState extends State<About> {
+  final TextEditingController aboutCon = TextEditingController();
+
+  Future<void> _uploadData() async {
+    if (aboutCon.text.isEmpty && aboutCon.text == '') {
+      showMsg(context, 'Field cannot be empty!');
+    } else {
+      try {
+        loadingDialog(context);
+        await profiles.doc(auth.currentUser!.uid).update({
+          'about': aboutCon.text,
+        });
+        Navigator.pop(context);
+        Provider.of<GlobalProvider>(context, listen: false)
+            .updateStackIndex(context, 3);
+        aboutCon.clear();
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
+        showMsg(context, e.message.toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<GlobalProvider>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -31,6 +60,7 @@ class About extends StatelessWidget {
                 havePrefix: false,
                 haveLabel: false,
                 maxLines: 18,
+                controller: aboutCon,
               ),
             ],
           ),
@@ -44,7 +74,7 @@ class About extends StatelessWidget {
             SizedBox(
               width: 167,
               child: MyButton(
-                onTap: () => provider.updateStackIndex(context, 3),
+                onTap: _uploadData,
               ),
             ),
           ],
@@ -53,5 +83,3 @@ class About extends StatelessWidget {
     );
   }
 }
-
-

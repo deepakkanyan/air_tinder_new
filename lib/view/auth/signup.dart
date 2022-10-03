@@ -113,7 +113,7 @@ class _SignupBottomSheetDataState extends State<SignupBottomSheetData> {
   Future<void> signup() async {
     if (isValid) {
       try {
-        loading(context);
+        loadingDialog(context);
         await auth.createUserWithEmailAndPassword(
           email: emailCon.text.trim(),
           password: passCon.text.trim(),

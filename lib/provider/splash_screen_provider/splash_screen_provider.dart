@@ -1,12 +1,12 @@
 import 'package:air_tinder/utils/instances.dart';
-import 'package:air_tinder/view/auth/complete_profile/complete_profile.dart';
+import 'package:air_tinder/view/auth/complete_profile/completion_checker.dart';
 import 'package:air_tinder/view/auth/login.dart';
-import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreenProvider with ChangeNotifier {
   void checkIfLoggedIn(BuildContext context) {
     if (auth.currentUser != null) {
+      final String uID = auth.currentUser!.uid;
       Future.delayed(
         Duration(
           seconds: 2,
@@ -14,7 +14,7 @@ class SplashScreenProvider with ChangeNotifier {
         () => Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (_) => BottomNavBar(),
+            builder: (_) => CompletionChecker(uID: uID),
           ),
           (route) => false,
         ),

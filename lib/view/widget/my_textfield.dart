@@ -17,7 +17,9 @@ class MyTextField extends StatelessWidget {
     this.iconSize,
     this.prefixIcon,
     this.isFilled = false,
+    this.isReadOnly = false,
     this.filledColor,
+    this.onTap,
   }) : super(key: key);
 
   TextEditingController? controller;
@@ -25,8 +27,9 @@ class MyTextField extends StatelessWidget {
   String? labelText, hintText, prefixIcon;
   double? iconSize;
   int maxLines;
-  bool? havePrefix, haveLabel, isAllWhite, isFilled;
+  bool? havePrefix, haveLabel, isAllWhite, isFilled,isReadOnly;
   Color? filledColor;
+  VoidCallback? onTap;
 
   Widget build(BuildContext context) {
     return Padding(
@@ -45,6 +48,8 @@ class MyTextField extends StatelessWidget {
                 )
               : SizedBox(),
           TextFormField(
+            onTap: onTap,
+            readOnly: isReadOnly!,
             maxLines: maxLines,
             controller: controller,
             onChanged: onChanged,

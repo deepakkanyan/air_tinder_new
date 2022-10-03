@@ -23,7 +23,8 @@ dependencies:
   firebase_storage:
   another_flushbar:
   lottie:
-  image_picker:  
+  image_picker:
+  get_storage:
 
 dev_dependencies:
   flutter_test:

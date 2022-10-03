@@ -3,14 +3,15 @@ import 'package:air_tinder/config/theme_config/light_theme.dart';
 import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/provider/splash_screen_provider/splash_screen_provider.dart';
-import 'package:air_tinder/utils/instances.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await GetStorage.init();
   runApp(
     MultiProvider(
       providers: [

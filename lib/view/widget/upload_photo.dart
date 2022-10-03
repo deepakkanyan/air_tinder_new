@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/widget/height_width.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,12 +14,14 @@ class UploadPhoto extends StatelessWidget {
     this.onTap,
     this.pickedImage,
     this.onRemoveTap,
+    this.imgURL,
   }) : super(key: key);
 
   int index;
   VoidCallback? onTap;
   VoidCallback? onRemoveTap;
   XFile? pickedImage;
+  String? imgURL;
 
   @override
   Widget build(BuildContext context) {
@@ -44,21 +47,37 @@ class UploadPhoto extends StatelessWidget {
                 highlightColor: kSecondaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
-                  child: pickedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.file(
-                            File(pickedImage!.path),
-                            height: height(1.0, context),
-                            width: width(1.0, context),
-                            fit: BoxFit.cover,
-                          ),
+                  child: imgURL != null
+                      ? Image.network(
+                          imgURL!,
+                          height: height(1.0, context),
+                          width: width(1.0, context),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return loading(context);
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+                            return loading(context);
+                          },
                         )
-                      : Image.asset(
-                          Assets.imagesAddImage,
-                          height: 35,
-                          color: kSecondaryColor,
-                        ),
+                      : pickedImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.file(
+                                File(pickedImage!.path),
+                                height: height(1.0, context),
+                                width: width(1.0, context),
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Image.asset(
+                              Assets.imagesAddImage,
+                              height: 35,
+                              color: kSecondaryColor,
+                            ),
                 ),
               ),
             ),
