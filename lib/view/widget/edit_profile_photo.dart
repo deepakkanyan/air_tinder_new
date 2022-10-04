@@ -1,5 +1,6 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/widget/height_width.dart';
 import 'package:flutter/material.dart';
 
@@ -30,11 +31,20 @@ class EditProfilePhoto extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(100),
-              child: Image.asset(
+              child: Image.network(
                 profileImage!,
                 height: height(1.0, context),
                 width: width(1.0, context),
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return loadingWidget(context, size: 30,color: kPrimaryColor);
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return loadingWidget(context, size: 30,color: kPrimaryColor);
+                },
               ),
             ),
           ),

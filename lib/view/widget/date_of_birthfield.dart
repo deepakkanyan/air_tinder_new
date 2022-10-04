@@ -28,7 +28,7 @@ class DateOfBirthField extends StatelessWidget {
       cursorWidth: 1.0,
       style: TextStyle(
         fontSize: 16,
-        color: kTertiaryColor,
+        color: isAllWhite! ? kPrimaryColor : kTertiaryColor,
       ),
       readOnly: true,
       decoration: InputDecoration(

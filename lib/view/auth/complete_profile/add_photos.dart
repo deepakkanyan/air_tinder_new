@@ -229,14 +229,14 @@ class _AddPhotosState extends State<AddPhotos> {
                                   width: width(1.0, context),
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return loading(context);
+                                    return loadingWidget(context);
                                   },
                                   loadingBuilder:
                                       (context, child, loadingProgress) {
                                     if (loadingProgress == null) {
                                       return child;
                                     }
-                                    return loading(context);
+                                    return loadingWidget(context);
                                   },
                                 )
                               : _pickedProfileImage != null

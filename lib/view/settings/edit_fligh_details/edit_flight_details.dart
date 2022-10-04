@@ -1,11 +1,10 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/settings/edit_fligh_details/edit_landing_details.dart';
 import 'package:air_tinder/view/settings/edit_fligh_details/edit_layover_details.dart';
 import 'package:air_tinder/view/settings/edit_fligh_details/edit_traveling_details.dart';
 import 'package:air_tinder/view/widget/edit_flight_tiles.dart';
-import 'package:air_tinder/view/widget/icon_tiles.dart';
-import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/simple_appbar.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,8 @@ class EditFlightDetails extends StatelessWidget {
                   ),
                   EditFlightTiles(
                     icon: Assets.imagesDeparture,
-                    title: 'Flying from: JFK Airport, New York',
+                    title:
+                        'Flying from: ${fDetails.departureAirport} Airport, ${fDetails.departureCity}',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -46,7 +46,8 @@ class EditFlightDetails extends StatelessWidget {
                   ),
                   EditFlightTiles(
                     icon: Assets.imagesPlaneSolid,
-                    title: ' Layover at: London City Airport, London',
+                    title:
+                        ' Layover at: ${fDetails.layoverAirport} Airport, ${fDetails.layoverCity}',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -56,7 +57,8 @@ class EditFlightDetails extends StatelessWidget {
                   ),
                   EditFlightTiles(
                     icon: Assets.imagesPlaneArrival,
-                    title: 'Landing at: Dubai International Airport, Dubai',
+                    title:
+                        'Landing at: ${fDetails.landingAirport} Airport, ${fDetails.landingCity}',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(

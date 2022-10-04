@@ -1,6 +1,5 @@
 import 'package:air_tinder/config/routes_config/routes_config.dart';
 import 'package:air_tinder/config/theme_config/light_theme.dart';
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/provider/splash_screen_provider/splash_screen_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,9 +19,6 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => GlobalProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
         ),
       ],
       child: MyApp(),

@@ -12,8 +12,12 @@ import 'package:air_tinder/view/widget/settings_action_tiles.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
+  DateTime currentDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
+    final int age = int.parse(userDetailModel.dateOfBirth!.substring(9, 13)) -
+        int.parse(currentDate.toString().substring(0, 4));
     return Scaffold(
       body: Container(
         decoration: redBg,
@@ -26,13 +30,16 @@ class Settings extends StatelessWidget {
             SizedBox(
               height: 60,
             ),
-            ProfileImage(
-              imgURL: Assets.imagesDummyMan,
-              size: 180.0,
+            Center(
+              child: ProfileImage(
+                imgURL: userDetailModel.profileImgUrl!,
+                size: 180.0,
+                loadingColor: kPrimaryColor,
+              ),
             ),
             MyText(
               paddingTop: 15,
-              text: 'Jeremy Nelson',
+              text: userDetailModel.fullName,
               size: 25,
               weight: FontWeight.w500,
               color: kPrimaryColor,
@@ -66,14 +73,15 @@ class Settings extends StatelessWidget {
             MyText(
               paddingTop: 10,
               paddingBottom: 8,
-              text: '25',
+              text: age.isNegative ? age.toString().substring(1, 3) : age,
               size: 16,
               weight: FontWeight.w500,
               color: kPrimaryColor,
             ),
             IconTiles(
               icon: Assets.imagesDeparture,
-              title: 'Flying from: JFK Airport, New York',
+              title:
+                  'Flying from: ${fDetails.departureAirport} Airport, ${fDetails.departureCity}',
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -81,12 +89,14 @@ class Settings extends StatelessWidget {
               ),
               child: IconTiles(
                 icon: Assets.imagesPlaneSolid,
-                title: ' Layover at: London City Airport, London',
+                title:
+                    ' Layover at: ${fDetails.layoverAirport} Airport, ${fDetails.layoverCity}',
               ),
             ),
             IconTiles(
               icon: Assets.imagesPlaneArrival,
-              title: 'Landing at: Dubai International Airport, Dubai',
+              title:
+                  'Landing at: ${fDetails.landingAirport} Airport, ${fDetails.landingCity}',
             ),
             MyText(
               paddingTop: 15,
@@ -124,7 +134,7 @@ class Settings extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => SplashScreen(),
                   ),
-                      (route) => route.isFirst,
+                  (route) => route.isFirst,
                 );
               },
               icon: Assets.imagesLogout,

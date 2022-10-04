@@ -22,16 +22,17 @@ Future<dynamic> loadingDialog(
   );
 }
 
-Widget loading(
+Widget loadingWidget(
   BuildContext context, {
   double? size = 50.0,
+  Color? color,
 }) {
   return Center(
     child: SizedBox(
       height: size,
       width: size,
       child: CircularProgressIndicator(
-        color: kSecondaryColor,
+        color: color ?? kSecondaryColor,
       ),
     ),
   );

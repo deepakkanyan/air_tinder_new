@@ -1,4 +1,6 @@
+import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +12,7 @@ class BlackLogoAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: kPrimaryColor,
       centerTitle: true,
       leading: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +22,7 @@ class BlackLogoAppBar extends StatelessWidget implements PreferredSizeWidget {
               left: 5,
             ),
             child: ProfileImage(
-              imgURL: Assets.imagesDummyMan,
+              imgURL: userDetailModel.profileImgUrl!,
             ),
           ),
         ],

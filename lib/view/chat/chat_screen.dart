@@ -1,5 +1,6 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/widget/block_user_button.dart';
 import 'package:air_tinder/view/widget/chat_bubbles.dart';
 import 'package:air_tinder/view/widget/height_width.dart';
@@ -39,7 +40,7 @@ class ChatScreen extends StatelessWidget {
           children: [
             ProfileImage(
               size: 45.0,
-              imgURL: profileImage,
+              imgURL: userDetailModel.profileImgUrl!,
             ),
             Expanded(
               child: MyText(

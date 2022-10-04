@@ -1,16 +1,19 @@
+
 class UserDetailModel {
+  static UserDetailModel instance = UserDetailModel();
+
   String? uId;
   String? email;
   String? fullName;
   String? gender;
   String? profileImgUrl;
   List? additionalImages = [];
-  String? dob;
+  String? dateOfBirth;
   List? interests = [];
   String? about;
-  Map<String,dynamic>? departureDetails;
-  Map<String,dynamic>? layoverDetails;
-  Map<String,dynamic>? landingDetails;
+  Map<String, dynamic>? departureDetails;
+  Map<String, dynamic>? layoverDetails;
+  Map<String, dynamic>? landingDetails;
   String? createdAt;
 
   UserDetailModel({
@@ -20,7 +23,7 @@ class UserDetailModel {
     this.gender = '',
     this.profileImgUrl = '',
     this.additionalImages,
-    this.dob = '',
+    this.dateOfBirth = '',
     this.interests,
     this.about = '',
     this.departureDetails,
@@ -35,9 +38,9 @@ class UserDetailModel {
         email: json['email'],
         fullName: json['fullName'],
         gender: json['gender'],
-        profileImgUrl: json['profileImgUrl'],
+        profileImgUrl: json['profileImage'],
         additionalImages: json['additionalImages'],
-        dob: json['dob'],
+        dateOfBirth: json['dateOfBirth'],
         interests: json['interests'],
         about: json['about'],
         departureDetails: json['departureDetails'],
@@ -51,9 +54,9 @@ class UserDetailModel {
         'email': email,
         'fullName': fullName,
         'gender': gender,
-        'profileImgUrl': profileImgUrl,
+        'profileImage': profileImgUrl,
         'additionalImages': additionalImages,
-        'dob': dob,
+        'dateOfBirth': dateOfBirth,
         'interests': interests,
         'about': about,
         'departureDetails': departureDetails,

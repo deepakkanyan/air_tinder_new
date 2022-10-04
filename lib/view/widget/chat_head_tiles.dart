@@ -1,4 +1,5 @@
 import 'package:air_tinder/constant/color.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/chat/chat_screen.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
@@ -28,7 +29,7 @@ class ChatHeadsTiles extends StatelessWidget {
       ),
       leading: ProfileImage(
         size: 50.0,
-        imgURL: imageURL,
+        imgURL: userDetailModel.profileImgUrl!,
       ),
       title: MyText(
         text: '$name',

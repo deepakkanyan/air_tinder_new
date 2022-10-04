@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
@@ -78,9 +80,10 @@ class _CompletionCheckerState extends State<CompletionChecker> {
             });
           } else {
             await profiles.doc(auth.currentUser!.uid).get().then((value) {
-              UserDetailModel uDM = UserDetailModel.fromJson(
+              userDetailModel = UserDetailModel.fromJson(
                 value.data() as Map<String, dynamic>,
               );
+              log(userDetailModel.profileImgUrl!);
             });
             setState(() {
               _sProvider.stackIndex = 0;

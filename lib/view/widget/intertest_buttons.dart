@@ -1,5 +1,4 @@
 import 'package:air_tinder/constant/color.dart';
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:flutter/material.dart';
 

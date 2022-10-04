@@ -1,11 +1,6 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
-import 'package:air_tinder/view/widget/custom_container.dart';
 import 'package:air_tinder/view/widget/headings.dart';
-import 'package:air_tinder/view/widget/intertest_buttons.dart';
-import 'package:air_tinder/view/widget/my_button.dart';
-import 'package:air_tinder/view/widget/simple_appbar.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +8,6 @@ import 'package:provider/provider.dart';
 class EditInterests extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: kSecondaryColor,
       appBar: AppBar(

@@ -1,4 +1,5 @@
 import 'package:air_tinder/constant/color.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -6,11 +7,13 @@ class ProfileImage extends StatelessWidget {
   ProfileImage({
     Key? key,
     this.size = 38.0,
-    this.imgURL,
+    required this.imgURL,
+    this.loadingColor,
   }) : super(key: key);
 
-  String? imgURL;
+  final String imgURL;
   double? size;
+  Color? loadingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +26,25 @@ class ProfileImage extends StatelessWidget {
           color: kSecondaryColor,
           width: 1.0,
         ),
-        image: DecorationImage(
-          image: AssetImage(
-            imgURL!,
-          ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: Image.network(
+          imgURL,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return loadingWidget(context,
+                size: 30, color: loadingColor ?? kSecondaryColor);
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            }
+            return loadingWidget(context,
+                size: 30, color: loadingColor ?? kSecondaryColor);
+          },
         ),
       ),
     );

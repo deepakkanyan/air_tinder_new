@@ -1,5 +1,4 @@
 import 'package:air_tinder/generated/assets.dart';
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/utils/collections.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';

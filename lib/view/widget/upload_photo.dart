@@ -48,20 +48,23 @@ class UploadPhoto extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 child: Center(
                   child: imgURL != null
-                      ? Image.network(
-                          imgURL!,
-                          height: height(1.0, context),
-                          width: width(1.0, context),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return loading(context);
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            }
-                            return loading(context);
-                          },
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.network(
+                            imgURL!,
+                            height: height(1.0, context),
+                            width: width(1.0, context),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return loadingWidget(context);
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return loadingWidget(context);
+                            },
+                          ),
                         )
                       : pickedImage != null
                           ? ClipRRect(
@@ -82,10 +85,10 @@ class UploadPhoto extends StatelessWidget {
               ),
             ),
           ),
-          pickedImage != null
+          (imgURL != null || pickedImage != null)
               ? Positioned(
-                  top: 3,
-                  right: 3,
+                  top: 5,
+                  right: 10,
                   child: GestureDetector(
                     onTap: onRemoveTap,
                     child: Container(

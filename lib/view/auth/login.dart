@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
-import 'package:air_tinder/provider/auth_provider/auth_provider.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
+import 'package:air_tinder/view/auth/complete_profile/completion_checker.dart';
 import 'package:air_tinder/view/auth/signup.dart';
 import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:air_tinder/view/widget/agree_to_terms.dart';
@@ -16,7 +14,6 @@ import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -82,6 +79,7 @@ class LoginBottomSheetData extends StatefulWidget {
 
 class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
   late TextEditingController emailCon;
+
   late TextEditingController passCon;
 
   Future<void> login() async {
@@ -101,9 +99,9 @@ class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (_) => BottomNavBar(),
+            builder: (_) => CompletionChecker(uID: auth.currentUser!.uid),
           ),
-          (route) => false,
+              (route) => false,
         );
         emailCon.clear();
         passCon.clear();
@@ -168,7 +166,7 @@ class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
             hintText: '123456',
             isObSecure: true,
             isPasswordField: true,
-            controller: passCon,
+            controller:passCon,
           ),
           MyText(
             text: 'Forgot your password?',
