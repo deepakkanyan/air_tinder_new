@@ -27,7 +27,7 @@ class MyTextField extends StatelessWidget {
   String? labelText, hintText, prefixIcon;
   double? iconSize;
   int maxLines;
-  bool? havePrefix, haveLabel, isAllWhite, isFilled,isReadOnly;
+  bool? havePrefix, haveLabel, isAllWhite, isFilled, isReadOnly;
   Color? filledColor;
   VoidCallback? onTap;
 
@@ -86,7 +86,11 @@ class MyTextField extends StatelessWidget {
               hintText: hintText,
               hintStyle: TextStyle(
                 fontSize: 16,
-                color: isAllWhite! ? kPrimaryColor : kTertiaryColor,
+                color: isAllWhite!
+                    ? isFilled!
+                        ? kSecondaryColor
+                        : kPrimaryColor
+                    : kTertiaryColor,
               ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 15,

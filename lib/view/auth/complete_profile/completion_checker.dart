@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';

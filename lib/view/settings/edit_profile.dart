@@ -1,24 +1,31 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
 import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
-import 'package:air_tinder/provider/edit_profile_provider/edit_profile_provider.dart';
 import 'package:air_tinder/utils/collections.dart';
+import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
-import 'package:air_tinder/view/widget/upload_photo.dart';
+import 'package:air_tinder/view/settings/edit_interests.dart';
+import 'package:air_tinder/view/widget/custom_date_picker.dart';
 import 'package:air_tinder/view/widget/custom_dialog.dart';
 import 'package:air_tinder/view/widget/date_of_birthfield.dart';
 import 'package:air_tinder/view/widget/edit_profile_photo.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/my_textfield.dart';
-import 'package:air_tinder/view/widget/show_interests.dart';
+import 'package:air_tinder/view/widget/pick_image.dart';
 import 'package:air_tinder/view/widget/simple_appbar.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
+import 'package:air_tinder/view/widget/upload_photo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class EditProfile extends StatefulWidget {
   @override
@@ -26,25 +33,160 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final _provider = Provider.of<EditProfileProvider>(context, listen: false);
-      getUserDetails(_provider);
+  String profileImage = '';
+  TextEditingController fullNameCon = TextEditingController();
+  TextEditingController dobCon = TextEditingController();
+  TextEditingController aboutCon = TextEditingController();
+  String selectedGender = '';
+  int genderIndex = 0;
+  List interests = [];
+  List<String> additionalImages = [];
+
+  File? _pickedProfileImage;
+  List<XFile> _additionalImages = [];
+  DateTime _dateTime = DateTime.now();
+
+  bool get isValid {
+    if (_pickedProfileImage == '') {
+      showMsg(context, 'Please select profile photo!');
+      return false;
+    } else if (dobCon.text.isEmpty && dobCon.text == '') {
+      showMsg(context, 'Date of birth cannot be empty!');
+      return false;
+    }
+    return true;
+  }
+
+  Future _uploadData() async {
+    if (isValid) {
+      try {
+        loadingDialog(context);
+        await _uploadProfileImage();
+        await profiles.doc(auth.currentUser!.uid).update({
+          'profileImage': profileImage,
+          'dateOfBirth': dobCon.text,
+          'about': aboutCon.text,
+        });
+        Navigator.pop(context);
+        showMsg(
+          context,
+          'Successfully updated!',
+          bgColor: kSuccessColor,
+        );
+        await profiles.doc(userDetailModel.uId).get().then(
+          (value) {
+            userDetailModel = UserDetailModel.fromJson(
+              value.data() as Map<String, dynamic>,
+            );
+          },
+        );
+        await _uploadMultipleImage();
+        setState(() {
+          _pickedProfileImage = null;
+          _additionalImages = [];
+        });
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
+        showMsg(context, e.message.toString());
+      }
+    }
+  }
+
+  Future _getProfileImage(ImageSource source) async {
+    try {
+      final img = await ImagePicker().pickImage(source: source);
+      if (img == null) {
+        return;
+      } else {
+        setState(() {
+          _pickedProfileImage = File(img.path);
+          profileImage = '';
+        });
+        Navigator.pop(context);
+      }
+    } on PlatformException catch (e) {
+      showMsg(context, 'Something went wrong!');
+    }
+  }
+
+  Future _uploadProfileImage() async {
+    Reference ref = await firebaseStorage.ref().child(
+          'images/profile image/${DateTime.now().toString()}',
+        );
+    await ref.putFile(_pickedProfileImage!);
+    await ref.getDownloadURL().then((value) {
+      log(value.toString());
+      setState(() {
+        profileImage = value;
+      });
     });
   }
 
-  void getUserDetails(EditProfileProvider provider) {
-    setState(() {
-      provider.fullNameCon.text = userDetailModel.fullName!;
-      provider.dobCon.text = userDetailModel.dateOfBirth!;
-      provider.aboutCon.text = userDetailModel.about!;
-      userDetailModel.gender == 'Male'
-          ? provider.genderIndex = 0
-          : provider.genderIndex = 1;
+  Future _getMoreImages() async {
+    try {
+      List<XFile>? _images = await ImagePicker().pickMultiImage();
+      if (_images == null) {
+        return;
+      } else {
+        setState(() {
+          _additionalImages = _images;
+        });
+      }
+    } on PlatformException catch (e) {
+      showMsg(context, 'Something went wrong!');
+    }
+  }
 
-      log(provider.fullNameCon.text.toString());
+  Future _uploadMultipleImage() async {
+    for (int i = 0; i < _additionalImages.length; i++) {
+      Reference ref = await firebaseStorage.ref().child(
+            'images/profile images/${DateTime.now().toString()}',
+          );
+      await ref.putFile(File(_additionalImages[i].path));
+      await ref.getDownloadURL().then((value) {
+        setState(() {
+          additionalImages.add(value);
+        });
+      });
+      await profiles.doc(auth.currentUser!.uid).update({
+        'additionalImages': additionalImages,
+      });
+    }
+  }
+
+  void _removePhoto(int index) {
+    setState(() {
+      _additionalImages.removeWhere(
+        (element) => element == _additionalImages[index],
+      );
+    });
+  }
+
+  void setGender(
+    int index,
+    String gender,
+  ) {
+    setState(() {
+      genderIndex = index;
+      selectedGender = gender;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  void getUserData() {
+    setState(() {
+      profileImage = userDetailModel.profileImgUrl!;
+      fullNameCon.text = userDetailModel.fullName!;
+      userDetailModel.gender == 'Male' ? genderIndex = 0 : genderIndex = 1;
+      genderIndex == 0 ? selectedGender = 'Male' : selectedGender = 'Female';
+      dobCon.text = userDetailModel.dateOfBirth!;
+      aboutCon.text = userDetailModel.about!;
+      interests = userDetailModel.interests!;
     });
   }
 
@@ -65,8 +207,22 @@ class _EditProfileState extends State<EditProfile> {
           ),
           children: [
             EditProfilePhoto(
-              profileImage: userDetailModel.profileImgUrl,
-              onEditTap: () {},
+              profileImageURL: profileImage,
+              filePath: _pickedProfileImage,
+              onEditTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return PickImage(
+                      pickFromCamera: () =>
+                          _getProfileImage(ImageSource.camera),
+                      pickFromGallery: () =>
+                          _getProfileImage(ImageSource.gallery),
+                    );
+                  },
+                  isScrollControlled: true,
+                );
+              },
             ),
             SizedBox(
               height: 30,
@@ -74,17 +230,18 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               children: List.generate(
                 userDetailModel.additionalImages!.isNotEmpty
-                    ? userDetailModel.additionalImages!.length + 1
+                    ? userDetailModel.additionalImages!.length
                     : 3,
-                    (index) {
+                (index) {
                   if (index < userDetailModel.additionalImages!.length) {
                     return UploadPhoto(
                       index: index,
+                      // pickedImage: _additionalImages[index],
                       imgURL: userDetailModel.additionalImages![index],
                       onTap: () {},
                       onRemoveTap: () async {
                         final imageUrl =
-                        userDetailModel.additionalImages![index];
+                            userDetailModel.additionalImages![index];
                         await profiles.doc(userDetailModel.uId).update(
                           {
                             'additionalImages': FieldValue.arrayRemove(
@@ -95,11 +252,15 @@ class _EditProfileState extends State<EditProfile> {
                           },
                         );
                         await firebaseStorage.refFromURL(imageUrl).delete();
+                        setState(() {
+                          final imageUrl =
+                              userDetailModel.additionalImages![index];
+                        });
                       },
                     );
                   } else {
                     return UploadPhoto(
-                      onTap: () {},
+                      onTap: _getMoreImages,
                       index: index,
                     );
                   }
@@ -109,16 +270,11 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 30,
             ),
-            Consumer<EditProfileProvider>(
-              builder: (context, provider, child) {
-                return MyTextField(
-                  havePrefix: false,
-                  haveLabel: false,
-                  isAllWhite: true,
-                  hintText: 'Full name',
-                  controller: provider.fullNameCon,
-                );
-              },
+            MyTextField(
+              havePrefix: false,
+              haveLabel: false,
+              isAllWhite: true,
+              controller: fullNameCon,
             ),
             MyText(
               paddingBottom: 10,
@@ -129,43 +285,39 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               children: List.generate(
                 2,
-                    (index) {
+                (index) {
                   return Padding(
                     padding: const EdgeInsets.only(
                       right: 15,
                     ),
                     child: Row(
                       children: [
-                        Consumer<EditProfileProvider>(
-                          builder: (context, provider, child) {
-                            return GestureDetector(
-                              onTap: () => provider.setGender(
-                                index,
-                                provider.genderIndex == 0 ? 'Male' : 'Female',
+                        GestureDetector(
+                          onTap: () => setGender(
+                            index,
+                            genderIndex == 0 ? 'Male' : 'Female',
+                          ),
+                          child: Container(
+                            height: 21,
+                            width: 21,
+                            decoration: BoxDecoration(
+                              color: genderIndex == index
+                                  ? kPrimaryColor
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(2),
+                              border: Border.all(
+                                color: kPrimaryColor,
+                                width: 2.0,
                               ),
-                              child: Container(
-                                height: 21,
-                                width: 21,
-                                decoration: BoxDecoration(
-                                  color: provider.genderIndex == index
-                                      ? kPrimaryColor
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(2),
-                                  border: Border.all(
-                                    color: kPrimaryColor,
-                                    width: 2.0,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.check,
-                                  size: 17,
-                                  color: provider.genderIndex == index
-                                      ? kSecondaryColor
-                                      : Colors.transparent,
-                                ),
-                              ),
-                            );
-                          },
+                            ),
+                            child: Icon(
+                              Icons.check,
+                              size: 17,
+                              color: genderIndex == index
+                                  ? kSecondaryColor
+                                  : Colors.transparent,
+                            ),
+                          ),
                         ),
                         MyText(
                           paddingLeft: 10,
@@ -182,42 +334,97 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 30,
             ),
-            Consumer<EditProfileProvider>(
-              builder: (context, provider, child) {
-                return DateOfBirthField(
-                  isAllWhite: true,
-                  controller: provider.dobCon,
+            DateOfBirthField(
+              isAllWhite: true,
+              controller: dobCon,
+              onCalenderTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  builder: (_) {
+                    return CustomDatePicker(
+                      initialDateTime: _dateTime,
+                      onDateTimeChanged: (value) {
+                        setState(() {
+                          _dateTime = value;
+                        });
+                      },
+                      heading: "choose your birthday",
+                      onDoneTap: () {
+                        setState(() {
+                          dobCon.text =
+                              DateFormat.yMEd().format(_dateTime).toString();
+                        });
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
                 );
               },
             ),
-            ShowInterests(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    MyText(
+                      text: 'Interests',
+                      size: 16,
+                      color: kPrimaryColor,
+                      paddingRight: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EditInterests(),
+                        ),
+                      ),
+                      child: Image.asset(
+                        Assets.imagesEdit,
+                        height: 20,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(
+                    interests.length,
+                    (index) {
+                      return interestCards(interests[index]);
+                    },
+                  ),
+                ),
+              ],
+            ),
             SizedBox(
               height: 30,
             ),
-            Consumer<EditProfileProvider>(
-              builder: (context, provider, child) {
-                return MyTextField(
-                  isAllWhite: true,
-                  havePrefix: false,
-                  isFilled: true,
-                  filledColor: kPrimaryColor,
-                  labelText: 'About me',
-                  controller: provider.aboutCon,
-                  maxLines: 6,
-                );
-              },
+            MyTextField(
+              isAllWhite: true,
+              havePrefix: false,
+              isFilled: true,
+              filledColor: kPrimaryColor,
+              labelText: 'About me',
+              controller: aboutCon,
+              maxLines: 6,
             ),
             SizedBox(
               height: 10,
             ),
-            Consumer<EditProfileProvider>(
-              builder: (context, provider, child) {
-                return SimpleButton(
-                  onTap: () {},
-                  height: 40,
-                  buttonText: 'Save',
-                );
-              },
+            SimpleButton(
+              onTap: _uploadData,
+              height: 40,
+              buttonText: 'Save',
             ),
             SizedBox(
               height: 5,
@@ -230,10 +437,9 @@ class _EditProfileState extends State<EditProfile> {
                   context: context,
                   builder: (_) {
                     return CustomDialog(
-                      heading:
-                      'Are you sure you want to delete your account?',
+                      heading: 'Are you sure you want to delete your account?',
                       content:
-                      'All you data will be lost. You can create a new account later on.',
+                          'All you data will be lost. You can create a new account later on.',
                       onYesTap: () {},
                       onNoTap: () {},
                     );
@@ -245,6 +451,24 @@ class _EditProfileState extends State<EditProfile> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget interestCards(String interest) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(9),
+        color: kPrimaryColor,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 3,
+      ),
+      child: MyText(
+        text: interest,
+        size: 14,
+        color: kSecondaryColor,
       ),
     );
   }

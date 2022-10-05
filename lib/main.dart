@@ -1,6 +1,5 @@
 import 'package:air_tinder/config/routes_config/routes_config.dart';
 import 'package:air_tinder/config/theme_config/light_theme.dart';
-import 'package:air_tinder/provider/edit_profile_provider/edit_profile_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +15,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) => GlobalProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => EditProfileProvider(),
         ),
       ],
       child: MyApp(),

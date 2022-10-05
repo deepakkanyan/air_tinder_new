@@ -146,33 +146,6 @@ class _AddPhotosState extends State<AddPhotos> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _fetchProfileData();
-  }
-
-  void _fetchProfileData() async {
-    await profiles.doc(auth.currentUser!.uid).get().then(
-      (value) {
-        if (value.exists) {
-          setState(() {
-            Map<String, dynamic> _data = value.data() as Map<String, dynamic>;
-            profileImage = _data['profileImage'];
-            // additionalImages = _data['additionalImages'];
-            // dobCon = _data['dateOfBirth'];
-            log(profileImage.toString());
-          });
-        } else {
-          setState(() {
-            // additionalImages = [];
-            // dobCon.text = '';
-          });
-        }
-      },
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -16,8 +16,22 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int age = int.parse(userDetailModel.dateOfBirth!.substring(9, 13)) -
-        int.parse(currentDate.toString().substring(0, 4));
+    final String departureCity =
+    userDetailModel.departureDetails!['departureCity'];
+    final String departureAirport =
+    userDetailModel.departureDetails!['departureAirPort'];
+
+    final String layoverCity =
+    userDetailModel.layoverDetails!['layoverCity'];
+    final String layoverAirport =
+    userDetailModel.layoverDetails!['layoverAirPort'];
+
+    final String landingCity =
+    userDetailModel.landingDetails!['landingCity'];
+    final String landingAirport =
+    userDetailModel.landingDetails!['landingAirport'];
+    // final int age = int.parse(userDetailModel.dateOfBirth!.substring(11, 15)) -
+    //     int.parse(currentDate.toString().substring(0, 4));
     return Scaffold(
       body: Container(
         decoration: redBg,
@@ -31,10 +45,19 @@ class Settings extends StatelessWidget {
               height: 60,
             ),
             Center(
-              child: ProfileImage(
-                imgURL: userDetailModel.profileImgUrl!,
-                size: 180.0,
-                loadingColor: kPrimaryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 3.0,
+                    color: kPrimaryColor,
+                  ),
+                ),
+                child: ProfileImage(
+                  imgURL: userDetailModel.profileImgUrl!,
+                  size: 170.0,
+                  loadingColor: kPrimaryColor,
+                ),
               ),
             ),
             MyText(
@@ -70,34 +93,37 @@ class Settings extends StatelessWidget {
                 ),
               ],
             ),
-            MyText(
-              paddingTop: 10,
-              paddingBottom: 8,
-              text: age.isNegative ? age.toString().substring(1, 3) : age,
-              size: 16,
-              weight: FontWeight.w500,
-              color: kPrimaryColor,
+            // MyText(
+            //   paddingTop: 10,
+            //   paddingBottom: 8,
+            //   text: age.isNegative ? age.toString().substring(1, 3) : age,
+            //   size: 16,
+            //   weight: FontWeight.w500,
+            //   color: kPrimaryColor,
+            // ),
+            SizedBox(
+              height: 15,
             ),
-            // IconTiles(
-            //   icon: Assets.imagesDeparture,
-            //   title:
-            //       'Flying from: ${fDetails.departureAirport} Airport, ${fDetails.departureCity}',
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(
-            //     vertical: 10,
-            //   ),
-            //   child: IconTiles(
-            //     icon: Assets.imagesPlaneSolid,
-            //     title:
-            //         ' Layover at: ${fDetails.layoverAirport} Airport, ${fDetails.layoverCity}',
-            //   ),
-            // ),
-            // IconTiles(
-            //   icon: Assets.imagesPlaneArrival,
-            //   title:
-            //       'Landing at: ${fDetails.landingAirport} Airport, ${fDetails.landingCity}',
-            // ),
+            IconTiles(
+              icon: Assets.imagesDeparture,
+              title:
+                  'Flying from: $departureAirport Airport, $departureCity',
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+              ),
+              child: IconTiles(
+                icon: Assets.imagesPlaneSolid,
+                title:
+                    ' Layover at: $layoverAirport Airport, $layoverCity',
+              ),
+            ),
+            IconTiles(
+              icon: Assets.imagesPlaneArrival,
+              title:
+                  'Landing at: $landingAirport Airport, $landingCity',
+            ),
             MyText(
               paddingTop: 15,
               paddingBottom: 10,
