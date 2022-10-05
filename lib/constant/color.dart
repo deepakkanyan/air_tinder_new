@@ -6,6 +6,7 @@ const kSecondaryColor = Color(0xffED2C23);
 const kTertiaryColor = Color(0xff080808);
 const kBrownColor = Color(0xffC13300);
 var kGreyColor = const Color(0xff080808).withOpacity(0.70);
+const kSuccessColor = Color(0xff22BB33);
 
 var bgImage = BoxDecoration(
   image: DecorationImage(

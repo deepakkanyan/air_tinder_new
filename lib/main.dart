@@ -1,7 +1,7 @@
 import 'package:air_tinder/config/routes_config/routes_config.dart';
 import 'package:air_tinder/config/theme_config/light_theme.dart';
+import 'package:air_tinder/provider/edit_profile_provider/edit_profile_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
-import 'package:air_tinder/provider/splash_screen_provider/splash_screen_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -15,10 +15,10 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => SplashScreenProvider(),
+          create: (_) => GlobalProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => GlobalProvider(),
+          create: (_) => EditProfileProvider(),
         ),
       ],
       child: MyApp(),

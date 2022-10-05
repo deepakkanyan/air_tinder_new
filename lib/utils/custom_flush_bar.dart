@@ -2,9 +2,9 @@ import 'package:air_tinder/constant/color.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
-Widget showMsg(BuildContext context, String msg) {
+Widget showMsg(BuildContext context, String msg,{Color? bgColor}) {
   return Flushbar(
-    backgroundColor: kSecondaryColor,
+    backgroundColor: bgColor ?? kSecondaryColor,
     message: msg,
     flushbarPosition: FlushbarPosition.BOTTOM,
     flushbarStyle: FlushbarStyle.FLOATING,

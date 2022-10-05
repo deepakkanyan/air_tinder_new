@@ -78,26 +78,26 @@ class Settings extends StatelessWidget {
               weight: FontWeight.w500,
               color: kPrimaryColor,
             ),
-            IconTiles(
-              icon: Assets.imagesDeparture,
-              title:
-                  'Flying from: ${fDetails.departureAirport} Airport, ${fDetails.departureCity}',
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
-              child: IconTiles(
-                icon: Assets.imagesPlaneSolid,
-                title:
-                    ' Layover at: ${fDetails.layoverAirport} Airport, ${fDetails.layoverCity}',
-              ),
-            ),
-            IconTiles(
-              icon: Assets.imagesPlaneArrival,
-              title:
-                  'Landing at: ${fDetails.landingAirport} Airport, ${fDetails.landingCity}',
-            ),
+            // IconTiles(
+            //   icon: Assets.imagesDeparture,
+            //   title:
+            //       'Flying from: ${fDetails.departureAirport} Airport, ${fDetails.departureCity}',
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(
+            //     vertical: 10,
+            //   ),
+            //   child: IconTiles(
+            //     icon: Assets.imagesPlaneSolid,
+            //     title:
+            //         ' Layover at: ${fDetails.layoverAirport} Airport, ${fDetails.layoverCity}',
+            //   ),
+            // ),
+            // IconTiles(
+            //   icon: Assets.imagesPlaneArrival,
+            //   title:
+            //       'Landing at: ${fDetails.landingAirport} Airport, ${fDetails.landingCity}',
+            // ),
             MyText(
               paddingTop: 15,
               paddingBottom: 10,

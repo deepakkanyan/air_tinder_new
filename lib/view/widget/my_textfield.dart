@@ -48,6 +48,7 @@ class MyTextField extends StatelessWidget {
                 )
               : SizedBox(),
           TextFormField(
+            textInputAction: TextInputAction.next,
             onTap: onTap,
             readOnly: isReadOnly!,
             maxLines: maxLines,

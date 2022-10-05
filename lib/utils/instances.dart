@@ -8,4 +8,3 @@ FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore fireStore = FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 UserDetailModel userDetailModel = UserDetailModel.instance;
-FlightDetailsProvider fDetails = FlightDetailsProvider.instance;
