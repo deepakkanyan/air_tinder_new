@@ -1,4 +1,5 @@
 import 'package:air_tinder/constant/color.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:flutter/material.dart';
 
 class ElevatedImage extends StatelessWidget {
@@ -25,9 +26,22 @@ class ElevatedImage extends StatelessWidget {
                 offset: Offset(0, 3),
               ),
             ],
-            image: DecorationImage(
-              image: AssetImage(image!),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              image!,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return loadingWidget(context);
+                }
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return loadingWidget(context);
+              },
             ),
           ),
         ),

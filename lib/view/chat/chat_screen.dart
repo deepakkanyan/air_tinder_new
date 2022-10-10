@@ -1,21 +1,28 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/model/chat_model/chat_room_model.dart';
+import 'package:air_tinder/model/chat_model/message_model.dart';
+import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
+import 'package:air_tinder/utils/collections.dart';
+import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/widget/block_user_button.dart';
 import 'package:air_tinder/view/widget/chat_bubbles.dart';
-import 'package:air_tinder/view/widget/height_width.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:air_tinder/view/widget/send_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
   ChatScreen({
-    this.profileImage,
-    this.name,
+    required this.chatRoomModel,
+    required this.targetedUser,
   });
 
-  String? profileImage, name;
+  final ChatRoomModel chatRoomModel;
+  final UserDetailModel targetedUser;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +47,12 @@ class ChatScreen extends StatelessWidget {
           children: [
             ProfileImage(
               size: 45.0,
-              imgURL: userDetailModel.profileImgUrl!,
+              imgURL: targetedUser.profileImgUrl!,
             ),
             Expanded(
               child: MyText(
                 paddingLeft: 15,
-                text: name,
+                text: targetedUser.fullName,
                 size: 16,
               ),
             ),
@@ -57,28 +64,55 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          ListView.builder(
-            physics: BouncingScrollPhysics(),
-            reverse: true,
-            itemCount: 2,
-            shrinkWrap: true,
-            padding: EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 30,
-            ),
-            itemBuilder: (context, index) {
-              return ChatBubbles(
-                msg: index.isEven
-                    ? 'Yes! I can\'t wait to see you.'
-                    : 'Hi. We will be at the same layover. How exciting is this.',
-                senderType: index.isEven ? 'me' : 'other',
-              );
+          StreamBuilder(
+            stream: chatRooms
+                .doc(chatRoomModel.roomId)
+                .collection('messages').orderBy('time',descending: true)
+                .snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    reverse: true,
+                    itemCount: snapshot.data!.docs.length,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 30,
+                    ),
+                    itemBuilder: (context, index) {
+                      var data = snapshot.data!.docs[index];
+                      MessageModel mM = MessageModel.fromJson(
+                        data.data() as Map<String, dynamic>,
+                      );
+                      return ChatBubbles(
+                        msgID: mM.msgId,
+                        senderType:
+                            mM.sender == userDetailModel.uId ? 'me' : 'other',
+                        msg: mM.msg,
+                        time: mM.time,
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  showMsg(context, 'Something went wrong!');
+                  return loadingWidget(context);
+                } else {
+                  return Container();
+                }
+              } else {
+                return loadingWidget(context);
+              }
             },
           ),
           SendField(
-            // dateType: widget.dateType,
             dateType: 'planned',
-            onSendTap: () {},
+            controller: chatProvider.sendCon,
+            onSendTap: () => chatProvider.sendMsg(
+              context,
+              chatRoomModel,
+            ),
           ),
         ],
       ),

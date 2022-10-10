@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 class ChatBubbles extends StatelessWidget {
   ChatBubbles({
     Key? key,
-    this.msg,
-    this.senderType = 'me',
+    required this.msg,
+    required this.senderType,
+    required this.time,
+    required this.msgID,
   }) : super(key: key);
-  String? msg, senderType;
+  String msg, senderType, time, msgID;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class ChatBubbles extends StatelessWidget {
             ),
             MyText(
               paddingTop: 5,
-              text: '9:00 PM',
+              text: time,
               size: 14,
             ),
           ],

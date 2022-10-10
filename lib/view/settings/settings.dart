@@ -10,26 +10,43 @@ import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:air_tinder/view/widget/settings_action_tiles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  void getUserData() {
+    setState(() {
+      profileImageUrl = '';
+      departureCity = userDetailModel.departureDetails!['departureCity'];
+      departureAirport = userDetailModel.departureDetails!['departureAirPort'];
+      layoverCity = userDetailModel.layoverDetails!['layoverCity'];
+      layoverAirport = userDetailModel.layoverDetails!['layoverAirPort'];
+      landingCity = userDetailModel.landingDetails!['landingCity'];
+      landingAirport = userDetailModel.landingDetails!['landingAirport'];
+    });
+  }
+
+  String profileImageUrl = '';
+  String departureCity = '';
+  String departureAirport = '';
+  String layoverCity = '';
+  String layoverAirport = '';
+  String landingCity = '';
+  String landingAirport = '';
   DateTime currentDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final String departureCity =
-    userDetailModel.departureDetails!['departureCity'];
-    final String departureAirport =
-    userDetailModel.departureDetails!['departureAirPort'];
-
-    final String layoverCity =
-    userDetailModel.layoverDetails!['layoverCity'];
-    final String layoverAirport =
-    userDetailModel.layoverDetails!['layoverAirPort'];
-
-    final String landingCity =
-    userDetailModel.landingDetails!['landingCity'];
-    final String landingAirport =
-    userDetailModel.landingDetails!['landingAirport'];
     // final int age = int.parse(userDetailModel.dateOfBirth!.substring(11, 15)) -
     //     int.parse(currentDate.toString().substring(0, 4));
     return Scaffold(
@@ -106,8 +123,7 @@ class Settings extends StatelessWidget {
             ),
             IconTiles(
               icon: Assets.imagesDeparture,
-              title:
-                  'Flying from: $departureAirport Airport, $departureCity',
+              title: 'Flying from: $departureAirport Airport, $departureCity',
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -115,14 +131,12 @@ class Settings extends StatelessWidget {
               ),
               child: IconTiles(
                 icon: Assets.imagesPlaneSolid,
-                title:
-                    ' Layover at: $layoverAirport Airport, $layoverCity',
+                title: ' Layover at: $layoverAirport Airport, $layoverCity',
               ),
             ),
             IconTiles(
               icon: Assets.imagesPlaneArrival,
-              title:
-                  'Landing at: $landingAirport Airport, $landingCity',
+              title: 'Landing at: $landingAirport Airport, $landingCity',
             ),
             MyText(
               paddingTop: 15,

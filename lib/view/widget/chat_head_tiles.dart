@@ -1,6 +1,4 @@
 import 'package:air_tinder/constant/color.dart';
-import 'package:air_tinder/utils/instances.dart';
-import 'package:air_tinder/view/chat/chat_screen.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:flutter/material.dart';
@@ -8,28 +6,22 @@ import 'package:flutter/material.dart';
 class ChatHeadsTiles extends StatelessWidget {
   ChatHeadsTiles({
     Key? key,
-    this.imageURL,
-    this.name,
-    this.lastMsg,
-    this.time,
+    required this.imageURL,
+    required this.name,
+    required this.lastMsg,
+    required this.time,
+    required this.onTap,
   }) : super(key: key);
-  String? imageURL, name, lastMsg, time;
+  String imageURL, name, lastMsg, time;
+  VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChatScreen(
-            profileImage: imageURL,
-            name: name,
-          ),
-        ),
-      ),
+      onTap: onTap,
       leading: ProfileImage(
         size: 50.0,
-        imgURL: userDetailModel.profileImgUrl!,
+        imgURL: imageURL,
       ),
       title: MyText(
         text: '$name',

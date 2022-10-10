@@ -9,18 +9,19 @@ import 'package:flutter/material.dart';
 class SwipeAbleCards extends StatelessWidget {
   SwipeAbleCards({
     Key? key,
-    this.images,
-    this.name,
-    this.flyingFrom,
-    this.landingAt,
-    this.layover,
-    this.onDislikeTap,
-    this.onLikeTap,
+    required this.images,
+    required this.name,
+    required this.flyingFrom,
+    required this.landingAt,
+    required this.layover,
+    required this.onDislikeTap,
+    required this.onLikeTap,
+    required this.onTap,
   }) : super(key: key);
 
-  String? name, flyingFrom, layover, landingAt;
-  List<String>? images;
-  VoidCallback? onDislikeTap, onLikeTap;
+  final String name, flyingFrom, layover, landingAt;
+  final List images;
+  final VoidCallback onDislikeTap, onLikeTap, onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -40,21 +41,8 @@ class SwipeAbleCards extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ElevatedImage(
-            image: images![0],
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => HomeDetails(
-                  name: name,
-                  images: images,
-                  flyingFrom: flyingFrom,
-                  layover: layover,
-                  landingAt: landingAt,
-                  onLikeTap: onLikeTap,
-                  onDislikeTap: onDislikeTap,
-                ),
-              ),
-            ),
+            image: images[0],
+            onTap: onTap,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(

@@ -25,6 +25,7 @@ dependencies:
   lottie:
   image_picker:
   get_storage:
+  uuid:
 
 dev_dependencies:
   flutter_test:

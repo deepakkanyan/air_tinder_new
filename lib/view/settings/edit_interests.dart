@@ -149,9 +149,16 @@ class _EditInterestsState extends State<EditInterests> {
     if (selectedInterests.isNotEmpty && selectedInterests.length >= 3) {
       try {
         loadingDialog(context);
-        await profiles.doc(auth.currentUser!.uid).update({
+        await profiles.doc(userDetailModel.uId).update({
           'interests': interests,
         });
+        await profiles.doc(userDetailModel.uId).get().then(
+          (value) {
+            userDetailModel = UserDetailModel.fromJson(
+              value.data() as Map<String, dynamic>,
+            );
+          },
+        );
         Navigator.pop(context);
         showMsg(
           context,

@@ -1,4 +1,5 @@
 import 'package:air_tinder/constant/color.dart';
+import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/utils/collections.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
@@ -66,6 +67,15 @@ class LandingDetailsProvider with ChangeNotifier {
         airportCon.clear();
         landingDateCon.clear();
         landingTimeCon.clear();
+        isForEdit
+            ? null
+            : await profiles.doc(auth.currentUser!.uid).get().then(
+                (value) {
+                  userDetailModel = UserDetailModel.fromJson(
+                    value.data() as Map<String, dynamic>,
+                  );
+                },
+              );
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         showMsg(context, e.message.toString());
