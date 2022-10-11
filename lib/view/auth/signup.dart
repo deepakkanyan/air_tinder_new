@@ -87,7 +87,7 @@ class _SignupBottomSheetDataState extends State<SignupBottomSheetData> {
   late TextEditingController passCon;
   late TextEditingController confirmPassCon;
   late TextEditingController fullNameCon;
-  String gender = '';
+  String gender = 'Male';
   DateTime createdAt = DateTime.now();
 
   bool get isValid {
@@ -156,7 +156,7 @@ class _SignupBottomSheetDataState extends State<SignupBottomSheetData> {
     passCon.clear();
     confirmPassCon.clear();
     fullNameCon.clear();
-    gender = '';
+    gender = 'Male';
   }
 
   @override

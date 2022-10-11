@@ -26,7 +26,7 @@ class ElevatedImage extends StatelessWidget {
               ),
             ],
             image: DecorationImage(
-              image: AssetImage(image!),
+              image: NetworkImage(image!),
               fit: BoxFit.cover,
             ),
           ),
