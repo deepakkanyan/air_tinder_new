@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:air_tinder/model/chat_model/chat_room_model.dart';
 import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
 import 'package:air_tinder/utils/collections.dart';
+import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/chat/chat_screen.dart';
@@ -10,6 +11,7 @@ import 'package:air_tinder/view/home/home_details.dart';
 import 'package:air_tinder/view/widget/black_logo_app_bar.dart';
 import 'package:air_tinder/view/widget/height_width.dart';
 import 'package:air_tinder/view/widget/my_button.dart';
+import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/swipe_able_cards.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -91,90 +93,106 @@ class _HomeState extends State<Home> {
               'uId',
               isNotEqualTo: userDetailModel.uId,
             )
+            .where(
+              'gender',
+              isEqualTo: userDetailModel.gender == "Male" ? "Female" : "Male",
+            )
+            .where(
+              'layoverDetails.${"layoverAirPort"}',
+              isEqualTo: userDetailModel.layoverDetails!["layoverAirPort"],
+            )
+            // .where(
+            //   'layoverDetails.${"layoverCity"}',
+            //   isEqualTo: userDetailModel.layoverDetails!["layoverCity"],
+            // )
+            .where(
+              'layoverDetails.${"layoverLandingDate"}',
+              isEqualTo: userDetailModel.layoverDetails!["layoverLandingDate"],
+            )
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
-            if (snapshot.hasData) {
-              if (snapshot.data!.docs.length ==
-                  snapshot.data!.docs.length - 1) {
-                return MyButton(
-                  buttonText: 'Hello',
-                  onTap: () {},
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: TCard(
-                        size: Size(
-                          width(1.0, context),
-                          height(1.0, context),
-                        ),
-                        cards: List.generate(
-                          snapshot.data!.docs.length,
-                          (index) {
-                            DocumentSnapshot docSnapShot =
-                                snapshot.data!.docs[index];
-                            UserDetailModel tUDM = UserDetailModel.fromJson(
-                              docSnapShot.data() as Map<String, dynamic>,
-                            );
-                            return SwipeAbleCards(
-                              images: tUDM.additionalImages!,
-                              name: tUDM.fullName!,
-                              flyingFrom:
-                                  '${tUDM.departureDetails!['departureAirPort']}, ${tUDM.departureDetails!['departureCity']}',
-                              layover:
-                                  '${tUDM.layoverDetails!['layoverAirPort']}, ${tUDM.layoverDetails!['layoverCity']}',
-                              landingAt:
-                                  '${tUDM.landingDetails!['landingAirport']}, ${tUDM.landingDetails!['landingCity']}',
-                              onDislikeTap: () {},
-                              onTap: () {
-                                // showDialog(
-                                //   context: context,
-                                //   builder: (_) {
-                                //     return MatchDialog(
-                                //       otherPersonName: 'Carolyn',
-                                //       otherPersonImg: Assets.imagesDummyMan,
-                                //     );
-                                //   },
-                                // );
-                              },
-                              onLikeTap: () async {
-                                await chatProvider.gotoChatScreen(
-                                  context,
-                                  tUDM,
-                                );
-                              },
-                              // onTap: () => Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (_) => HomeDetails(
-                              //       name: uDM.fullName!,
-                              //       images: uDM.additionalImages!,
-                              //       flyingFrom:
-                              //           '${uDM.departureDetails!['departureAirPort']}, ${uDM.departureDetails!['departureCity']}',
-                              //       layover:
-                              //           '${uDM.layoverDetails!['layoverAirPort']}, ${uDM.layoverDetails!['layoverCity']}',
-                              //       landingAt:
-                              //           '${uDM.landingDetails!['landingAirport']}, ${uDM.landingDetails!['landingCity']}',
-                              //       interests: uDM.interests!,
-                              //       about: uDM.about!,
-                              //       onLikeTap: () {},
-                              //       onDislikeTap: () {},
-                              //     ),
-                              //   ),
-                              // ),
-                            );
-                          },
-                        ),
+            if (snapshot.hasData && snapshot.data!.docs.length > 0) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: TCard(
+                      size: Size(
+                        width(1.0, context),
+                        height(1.0, context),
+                      ),
+                      cards: List.generate(
+                        snapshot.data!.docs.length,
+                        (index) {
+                          DocumentSnapshot docSnapShot =
+                              snapshot.data!.docs[index];
+                          UserDetailModel tUDM = UserDetailModel.fromJson(
+                            docSnapShot.data() as Map<String, dynamic>,
+                          );
+                          return SwipeAbleCards(
+                            images: tUDM.additionalImages!,
+                            name: tUDM.fullName!,
+                            flyingFrom:
+                                '${tUDM.departureDetails!['departureAirPort']}, ${tUDM.departureDetails!['departureCity']}',
+                            layover:
+                                '${tUDM.layoverDetails!['layoverAirPort']}, ${tUDM.layoverDetails!['layoverCity']}',
+                            landingAt:
+                                '${tUDM.landingDetails!['landingAirport']}, ${tUDM.landingDetails!['landingCity']}',
+                            onDislikeTap: () {},
+                            // onTap: () {
+                            //   // showDialog(
+                            //   //   context: context,
+                            //   //   builder: (_) {
+                            //   //     return MatchDialog(
+                            //   //       otherPersonName: 'Carolyn',
+                            //   //       otherPersonImg: Assets.imagesDummyMan,
+                            //   //     );
+                            //   //   },
+                            //   // );
+                            // },
+                            onLikeTap: () async {
+                              await chatProvider.gotoChatScreen(
+                                context,
+                                tUDM,
+                              );
+                            },
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HomeDetails(
+                                  name: tUDM.fullName!,
+                                  images: tUDM.additionalImages!,
+                                  flyingFrom:
+                                      '${tUDM.departureDetails!['departureAirPort']}, ${tUDM.departureDetails!['departureCity']}',
+                                  layover:
+                                      '${tUDM.layoverDetails!['layoverAirPort']}, ${tUDM.layoverDetails!['layoverCity']}',
+                                  landingAt:
+                                      '${tUDM.landingDetails!['landingAirport']}, ${tUDM.landingDetails!['landingCity']}',
+                                  interests: tUDM.interests!,
+                                  about: tUDM.about!,
+                                  onLikeTap: () {},
+                                  onDislikeTap: () {},
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ],
-                );
-              }
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              //log(snapshot.error.toString());
+              return showMsg(context,
+                  "Something went wrong: " + snapshot.error.toString());
             } else {
-              return loadingWidget(context);
+              return Center(
+                child: MyText(
+                  text: 'No Record Found!',
+                ),
+              );
             }
           } else {
             return loadingWidget(context);
