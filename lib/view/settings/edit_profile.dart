@@ -47,44 +47,117 @@ class _EditProfileState extends State<EditProfile> {
   DateTime _dateTime = DateTime.now();
 
   bool get isValid {
-    if (_pickedProfileImage == '') {
-      showMsg(context, 'Please select profile photo!');
+    if (_pickedProfileImage == null &&
+        _additionalImages.isEmpty &&
+        fullNameCon.text == userDetailModel.fullName &&
+        dobCon.text == userDetailModel.dateOfBirth &&
+        selectedGender == userDetailModel.gender &&
+        aboutCon.text == userDetailModel.about) {
+      showMsg(context, 'Nothing Changed!');
       return false;
+    } else if (fullNameCon.text.isEmpty && fullNameCon.text == '') {
+      showMsg(context, 'Name cannot be empty!');
     } else if (dobCon.text.isEmpty && dobCon.text == '') {
       showMsg(context, 'Date of birth cannot be empty!');
+      return false;
+    } else if (aboutCon.text.isEmpty && aboutCon.text == '') {
+      showMsg(context, 'About of birth cannot be empty!');
       return false;
     }
     return true;
   }
 
   Future _uploadData() async {
-    if (isValid) {
+    if (_pickedProfileImage == null &&
+        _additionalImages.isEmpty &&
+        fullNameCon.text == userDetailModel.fullName &&
+        dobCon.text == userDetailModel.dateOfBirth &&
+        selectedGender == userDetailModel.gender &&
+        aboutCon.text == userDetailModel.about) {
+      showMsg(context, 'Nothing Changed!');
+    } else {
       try {
+        String uId = userDetailModel.uId!;
         loadingDialog(context);
-        await _uploadProfileImage();
-        await profiles.doc(auth.currentUser!.uid).update({
-          'profileImage': profileImage,
-          'dateOfBirth': dobCon.text,
-          'about': aboutCon.text,
-        });
-        Navigator.pop(context);
-        showMsg(
-          context,
-          'Successfully updated!',
-          bgColor: kSuccessColor,
-        );
+        _pickedProfileImage == null
+            ? null
+            : await _uploadProfileImage().then(
+                (value) async {
+                  await profiles.doc(uId).update({
+                    'profileImage': profileImage,
+                  });
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Profile picture updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
+        fullNameCon.text.isEmpty &&
+                fullNameCon.text == '' &&
+                fullNameCon.text != userDetailModel.fullName
+            ? showMsg(context, 'Name cannot be empty!')
+            : await profiles.doc(uId).update({
+                'fullName': fullNameCon.text,
+              }).then(
+                (value) {
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Name updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
+
+        selectedGender == userDetailModel.gender
+            ? null
+            : await profiles.doc(uId).update({
+                'gender': selectedGender,
+              }).then(
+                (value) {
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Gender updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
+
+        // if (dobCon == userDetailModel.dateOfBirth) {
+        //   Navigator.pop(context);
+        //   return;
+        // } else {
+        //   await profiles.doc(uId).update({
+        //     'dateOfBirth': dobCon.text,
+        //   });
+        //   Navigator.pop(context);
+        //   showMsg(context, 'Date of birth updated successfully');
+        // }
+        // if (aboutCon.text == userDetailModel.about) {
+        //   Navigator.pop(context);
+        //   return;
+        // } else {
+        //   await profiles.doc(uId).update({
+        //     'about': dobCon.text,
+        //   });
+        //   Navigator.pop(context);
+        //   showMsg(context, 'About updated successfully');
+        // }
         await profiles.doc(userDetailModel.uId).get().then(
           (value) {
-            userDetailModel = UserDetailModel.fromJson(
-              value.data() as Map<String, dynamic>,
-            );
+            setState(() {
+              userDetailModel = UserDetailModel.fromJson(
+                value.data() as Map<String, dynamic>,
+              );
+              _pickedProfileImage = null;
+              _additionalImages = [];
+            });
           },
         );
-        await _uploadMultipleImage();
-        setState(() {
-          _pickedProfileImage = null;
-          _additionalImages = [];
-        });
+        // _additionalImages.isEmpty ? null : await _uploadMultipleImage();
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         showMsg(context, e.message.toString());

@@ -10,15 +10,17 @@ class HomeDetails extends StatefulWidget {
   HomeDetails({
     required this.name,
     required this.images,
+    required this.interests,
     required this.flyingFrom,
     required this.layover,
     required this.landingAt,
+    required this.about,
     required this.onDislikeTap,
     required this.onLikeTap,
   });
 
-  String? name, flyingFrom, layover, landingAt;
-  List<String>? images;
+  String name, flyingFrom, layover, landingAt, about;
+  List images, interests;
   VoidCallback? onDislikeTap, onLikeTap;
 
   @override
@@ -53,7 +55,7 @@ class _HomeDetailsState extends State<HomeDetails> {
                   currentIndex = index;
                 });
               },
-              itemCount: widget.images!.length,
+              itemCount: widget.images.length,
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return Padding(
@@ -62,7 +64,7 @@ class _HomeDetailsState extends State<HomeDetails> {
                     vertical: 15,
                   ),
                   child: ElevatedImage(
-                    image: widget.images![index],
+                    image: widget.images[index],
                     onTap: () {},
                   ),
                 );
@@ -72,7 +74,7 @@ class _HomeDetailsState extends State<HomeDetails> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              widget.images!.length,
+              widget.images.length,
               (index) {
                 return AnimatedContainer(
                   duration: Duration(
@@ -165,7 +167,7 @@ class _HomeDetailsState extends State<HomeDetails> {
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(
-                    5,
+                    widget.interests.length,
                     (index) {
                       return Container(
                         decoration: BoxDecoration(
@@ -180,7 +182,7 @@ class _HomeDetailsState extends State<HomeDetails> {
                           vertical: 3,
                         ),
                         child: MyText(
-                          text: 'interest',
+                          text: widget.interests[index],
                           size: 14,
                           color: kSecondaryColor,
                         ),
@@ -190,8 +192,7 @@ class _HomeDetailsState extends State<HomeDetails> {
                 ),
                 MyText(
                   paddingTop: 15,
-                  text:
-                      'Sed a magna semper, porta purus eu, ullamcorper ligula. Nam sit amet consectetur sapien. Etiam dui ipsum, viverra vel turpis ut, dignissim elementum mauris. Sed dapibus auctor scelerisque. Aenean at leo tellus. Morbi eu leo sapien. Fusce libero dolor, venenatis eget enim sed, commodo efficitur arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce justo ipsum, placerat vitae erat ac, porttitor tincidunt lacus. In fermentum nulla nec fermentum tempus.',
+                  text: widget.about,
                   align: TextAlign.center,
                 ),
               ],
