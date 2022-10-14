@@ -62,7 +62,14 @@ class ChatHeads extends StatelessWidget {
           ),
           StreamBuilder(
             stream: chatRooms
-                .where('participants.${userDetailModel.uId}', isEqualTo: true)
+                .where(
+                  'participants.${userDetailModel.uId}',
+                  isEqualTo: true,
+                )
+                .orderBy(
+                  'createdAt',
+                  descending: true,
+                )
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {

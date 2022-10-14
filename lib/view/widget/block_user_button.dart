@@ -1,5 +1,8 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/model/chat_model/chat_room_model.dart';
+import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/widget/custom_dialog.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +10,12 @@ import 'package:flutter/material.dart';
 class BlockUserButton extends StatelessWidget {
   const BlockUserButton({
     Key? key,
+    required this.targetUser,
+    required this.cRM,
   }) : super(key: key);
+
+  final ChatRoomModel cRM;
+  final UserDetailModel targetUser;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +61,13 @@ class BlockUserButton extends StatelessWidget {
                           return CustomDialog(
                             heading: 'Do you want to block this user?',
                             content:
-                            'If you block them they will not be able to message you again.',
-                            onNoTap: () {},
-                            onYesTap: () {},
+                                'If you block them they will not be able to message you again.',
+                            onNoTap: () => Navigator.pop(context),
+                            onYesTap: () => chatProvider.blockUser(
+                              context,
+                              cRM,
+                              targetUser,
+                            ),
                           );
                         },
                       );

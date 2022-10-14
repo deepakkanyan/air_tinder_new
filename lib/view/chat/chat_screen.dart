@@ -10,10 +10,12 @@ import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/widget/block_user_button.dart';
 import 'package:air_tinder/view/widget/chat_bubbles.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
+import 'package:air_tinder/view/widget/pick_image.dart';
 import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:air_tinder/view/widget/send_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatelessWidget {
   ChatScreen({
@@ -59,7 +61,10 @@ class ChatScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          BlockUserButton(),
+          BlockUserButton(
+            cRM: chatRoomModel,
+            targetUser: targetedUser,
+          ),
         ],
       ),
       body: Stack(
@@ -67,19 +72,22 @@ class ChatScreen extends StatelessWidget {
           StreamBuilder(
             stream: chatRooms
                 .doc(chatRoomModel.roomId)
-                .collection('messages').orderBy('time',descending: true)
+                .collection('messages')
+                .orderBy('time', descending: true)
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.hasData) {
                   return ListView.builder(
                     physics: BouncingScrollPhysics(),
-                    reverse: true,
                     itemCount: snapshot.data!.docs.length,
+                    reverse: true,
                     shrinkWrap: true,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 30,
+                    padding: EdgeInsets.only(
+                      left: 15,
+                      right: 15,
+                      bottom: 100,
+                      top: 30,
                     ),
                     itemBuilder: (context, index) {
                       var data = snapshot.data!.docs[index];
@@ -92,6 +100,7 @@ class ChatScreen extends StatelessWidget {
                             mM.sender == userDetailModel.uId ? 'me' : 'other',
                         msg: mM.msg,
                         time: mM.time,
+                        mediaType: mM.mediaType,
                       );
                     },
                   );
@@ -107,13 +116,33 @@ class ChatScreen extends StatelessWidget {
             },
           ),
           SendField(
-            dateType: 'planned',
-            controller: chatProvider.sendCon,
-            onSendTap: () => chatProvider.sendMsg(
-              context,
-              chatRoomModel,
-            ),
-          ),
+                  dateType: 'planned',
+                  controller: chatProvider.sendCon,
+                  onImagePick: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return PickImage(
+                          pickFromCamera: () => chatProvider.pickImage(
+                            context,
+                            ImageSource.camera,
+                            chatRoomModel,
+                          ),
+                          pickFromGallery: () => chatProvider.pickImage(
+                            context,
+                            ImageSource.gallery,
+                            chatRoomModel,
+                          ),
+                        );
+                      },
+                      isScrollControlled: true,
+                    );
+                  },
+                  onSendTap: () => chatProvider.sendTextMsg(
+                    context,
+                    chatRoomModel,
+                  ),
+                ),
         ],
       ),
     );

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/main.dart';
 import 'package:air_tinder/model/chat_model/chat_room_model.dart';
@@ -9,29 +8,70 @@ import 'package:air_tinder/utils/collections.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/chat/chat_screen.dart';
+import 'package:air_tinder/view/chat/send_image_preview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class ChatProvider with ChangeNotifier {
+class ChatProvider {
   static ChatProvider instance = ChatProvider();
   TextEditingController sendCon = TextEditingController();
   XFile? pickedImage;
-  String pickedImageUrl = '';
-  DateTime now = DateTime.now();
   final format = DateFormat('h:mm a');
 
-  Future pickImage(BuildContext context, ImageSource source) async {
+  Future blockUser(
+    BuildContext context,
+    ChatRoomModel cRM,
+    UserDetailModel targetUser,
+  ) async {
+    try {
+      Navigator.pop(context);
+      await chatRooms.doc(cRM.roomId).update(
+        {
+          'participants': {
+            targetUser.uId: false,
+            userDetailModel.uId: true,
+          },
+        },
+      );
+      showMsg(
+        context,
+        'User blocked!',
+        bgColor: kSuccessColor,
+      );
+    } on FirebaseException catch (e) {
+      showMsg(
+        context,
+        e.message.toString(),
+      );
+    }
+  }
+
+  Future pickImage(
+    BuildContext context,
+    ImageSource source,
+    ChatRoomModel cRM,
+  ) async {
     try {
       XFile? _img = await ImagePicker().pickImage(source: source);
       if (_img == null) {
         return;
       } else {
         pickedImage = _img;
-        notifyListeners();
       }
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SendImagePreview(
+            file: pickedImage!,
+            chatRoomModel: cRM,
+          ),
+        ),
+      );
     } on PlatformException catch (e) {
       showMsg(
         context,
@@ -40,21 +80,39 @@ class ChatProvider with ChangeNotifier {
     }
   }
 
-  // Future uploadImage() async {
-  //   Reference ref = await firebaseStorage
-  //       .ref()
-  //       .child('images/chat Images/${DateTime.now().toString()}');
-  //   TaskSnapshot taskSnapshot = await ref.putFile(File(pickedImage!.path));
-  //   taskSnapshot.eve
-  //   await ref.getDownloadURL().then(
-  //     (value) {
-  //       pickedImageUrl = value.toString();
-  //       notifyListeners();
-  //     },
-  //   );
-  // }
+  Future sendImage(
+    BuildContext context,
+    ChatRoomModel cRM,
+  ) async {
+    Navigator.pop(context);
+    Reference ref = await firebaseStorage
+        .ref()
+        .child('images/chat Images/${DateTime.now().toString()}');
+    await ref.putFile(File(pickedImage!.path));
+    await ref.getDownloadURL().then(
+      (value) async {
+        MessageModel mMM = MessageModel(
+          time: '${format.format(DateTime.now())}',
+          msgId: uuid.v1(),
+          msg: value.toString(),
+          sender: userDetailModel.uId!,
+          mediaType: 'image',
+          isSeen: false,
+        );
+        chatRooms
+            .doc(cRM.roomId)
+            .collection('messages')
+            .doc(mMM.msgId)
+            .set(mMM.toJson());
+        cRM.lastMsg = mMM.msg;
+        cRM.lstMsgTime = mMM.time;
+        chatRooms.doc(cRM.roomId).set(cRM.toJson());
+        pickedImage = null;
+      },
+    );
+  }
 
-  void sendMsg(
+  void sendTextMsg(
     BuildContext context,
     ChatRoomModel cRM,
   ) async {
@@ -63,7 +121,7 @@ class ChatProvider with ChangeNotifier {
 
     if (msg != '') {
       MessageModel mM = MessageModel(
-        time: '${format.format(now)}',
+        time: '${format.format(DateTime.now())}',
         msgId: uuid.v1(),
         msg: msg,
         sender: userDetailModel.uId!,
@@ -78,20 +136,6 @@ class ChatProvider with ChangeNotifier {
       cRM.lastMsg = mM.msg;
       cRM.lstMsgTime = mM.time;
       chatRooms.doc(cRM.roomId).set(cRM.toJson());
-    } else if (pickedImage != null) {
-      MessageModel mMM = MessageModel(
-        time: DateTime.now().millisecondsSinceEpoch.toString(),
-        msgId: uuid.v1(),
-        msg: msg,
-        sender: userDetailModel.uId!,
-        mediaType: 'image',
-        isSeen: false,
-      );
-      chatRooms
-          .doc(cRM.roomId)
-          .collection('messages')
-          .doc(mMM.msgId)
-          .set(mMM.toJson());
     } else {
       showMsg(context, 'Message cannot be empty!');
     }
