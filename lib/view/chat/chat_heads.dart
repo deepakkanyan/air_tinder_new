@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:air_tinder/generated/assets.dart';
 import 'package:air_tinder/model/chat_model/chat_room_model.dart';
 import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
 import 'package:air_tinder/utils/collections.dart';
@@ -9,6 +10,7 @@ import 'package:air_tinder/view/chat/chat_screen.dart';
 import 'package:air_tinder/view/widget/black_logo_app_bar.dart';
 import 'package:air_tinder/view/widget/chat_head_tiles.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
+import 'package:air_tinder/view/widget/profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -24,35 +26,121 @@ class ChatHeads extends StatelessWidget {
           vertical: 20,
         ),
         children: [
-          // MyText(
-          //   text: 'New matches',
-          //   size: 16,
-          //   paddingLeft: 15,
-          //   paddingBottom: 5,
-          // ),
-          // Container(
-          //   height: 70,
-          //   child: ListView.builder(
-          //     shrinkWrap: true,
-          //     physics: BouncingScrollPhysics(),
-          //     itemCount: 10,
-          //     padding: EdgeInsets.symmetric(
-          //       horizontal: 7.5,
-          //     ),
-          //     scrollDirection: Axis.horizontal,
-          //     itemBuilder: (context, index) {
-          //       return Padding(
-          //         padding: const EdgeInsets.symmetric(
-          //           horizontal: 7.5,
-          //         ),
-          //         child: ProfileImage(
-          //           imgURL: Assets.imagesDummyMan,
-          //           size: 55,
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
+          MyText(
+            text: 'New Matches',
+            size: 16,
+            paddingLeft: 15,
+            paddingBottom: 5,
+          ),
+          Container(
+            height: 55,
+            child: StreamBuilder(
+              stream: likes
+                  .where(
+                    "direction",
+                    isEqualTo: "twoway",
+                  )
+                  .where("participants", arrayContains: userDetailModel.uId)
+                  .where("chatInitiated", isNotEqualTo: true)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.active) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: snapshot.data!.docs.length,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 7.5,
+                      ),
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        Map<String, dynamic> doc = snapshot.data!.docs[index]
+                            .data() as Map<String, dynamic>;
+                        String likesDocId = snapshot.data!.docs[index].id;
+                        return FutureBuilder(
+                          future: profiles
+                              .doc(doc["liked"] == userDetailModel.uId
+                                  ? doc["likedBy"]
+                                  : doc["liked"])
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              DocumentSnapshot documentSnapshot =
+                                  snapshot.data as DocumentSnapshot;
+                              UserDetailModel tUDM = UserDetailModel.fromJson(
+                                  documentSnapshot.data()
+                                      as Map<String, dynamic>);
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7.5,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await chatProvider.getChatRooms(
+                                        context, tUDM, likesDocId);
+                                  },
+                                  child: ProfileImage(
+                                    imgURL: tUDM.profileImgUrl!,
+                                    size: 55,
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return loadingWidget(context);
+                            } else {
+                              return MyText(text: "No New Matches!");
+                            }
+                          },
+                        );
+                      },
+                    );
+
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: 7.5,
+                    //   ),
+                    //   child: ProfileImage(
+                    //     imgURL: Assets.imagesDummyMan,
+                    //     size: 55,
+                    //   ),
+                    // );
+                  } else if (snapshot.hasError) {
+                    log(snapshot.error.toString());
+                    return loadingWidget(context);
+                  } else {
+                    return MyText(
+                      text: 'No new matches!',
+                    );
+                  }
+                } else {
+                  return loadingWidget(context);
+                }
+              },
+            ),
+
+            // ListView.builder(
+            //   shrinkWrap: true,
+            //   physics: BouncingScrollPhysics(),
+            //   itemCount: 10,
+            //   padding: EdgeInsets.symmetric(
+            //     horizontal: 7.5,
+            //   ),
+            //   scrollDirection: Axis.horizontal,
+            //   itemBuilder: (context, index) {
+            //     return Padding(
+            //       padding: const EdgeInsets.symmetric(
+            //         horizontal: 7.5,
+            //       ),
+            //       child: ProfileImage(
+            //         imgURL: Assets.imagesDummyMan,
+            //         size: 55,
+            //       ),
+            //     );
+            //   },
+            // ),
+          ),
           MyText(
             text: 'Messages',
             size: 16,
@@ -63,8 +151,8 @@ class ChatHeads extends StatelessWidget {
           StreamBuilder(
             stream: chatRooms
                 .where(
-                  'participants.${userDetailModel.uId}',
-                  isEqualTo: true,
+                  'participants',
+                  arrayContains: userDetailModel.uId,
                 )
                 .orderBy(
                   'createdAt',
@@ -83,14 +171,15 @@ class ChatHeads extends StatelessWidget {
                         snapshot.data!.docs[index].data()
                             as Map<String, dynamic>,
                       );
-                      Map<String, dynamic> _participants =
-                          chatRooms.participants;
-                      List<String> _participantsKey =
-                          _participants.keys.toList();
-                      _participantsKey.remove(userDetailModel.uId);
-                      log(_participantsKey[0].toString());
+
+                      List<dynamic> _participants = chatRooms.participants;
+
                       return FutureBuilder(
-                        future: profiles.doc(_participantsKey[0]).get(),
+                        future: profiles
+                            .doc(_participants[0] == userDetailModel.uId
+                                ? _participants[1]
+                                : _participants[0])
+                            .get(),
                         builder: (context, snapShot) {
                           if (snapShot.hasData) {
                             DocumentSnapshot docSnapShot =
@@ -129,6 +218,7 @@ class ChatHeads extends StatelessWidget {
                     },
                   );
                 } else if (snapshot.hasError) {
+                  log(snapshot.error.toString());
                   return loadingWidget(context);
                 } else {
                   return MyText(

@@ -1,17 +1,27 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
+import 'package:air_tinder/model/user_detail_model/user_detail_model.dart';
+import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:flutter/material.dart';
 
 class MatchDialog extends StatelessWidget {
-  MatchDialog({
-    Key? key,
-    this.otherPersonImg,
-    this.otherPersonName,
-  }) : super(key: key);
+  MatchDialog(
+      {Key? key,
+      this.otherPersonImg,
+      this.otherPersonName,
+      required this.onMessageTapMethod,
+      required this.context,
+      required this.tUDM,
+      required this.likesDocId})
+      : super(key: key);
 
   String? otherPersonImg, otherPersonName;
+  BuildContext context;
+  UserDetailModel tUDM;
+  void Function(BuildContext, UserDetailModel, String) onMessageTapMethod;
+  String likesDocId;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +56,7 @@ class MatchDialog extends StatelessWidget {
                         left: 50,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
-                          child: Image.asset(
+                          child: Image.network(
                             otherPersonImg!,
                             height: 100,
                             width: 100,
@@ -58,8 +68,8 @@ class MatchDialog extends StatelessWidget {
                         right: 50,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
-                          child: Image.asset(
-                            Assets.imagesGirl,
+                          child: Image.network(
+                            userDetailModel.profileImgUrl!,
                             height: 100,
                             width: 100,
                             fit: BoxFit.cover,
@@ -101,7 +111,7 @@ class MatchDialog extends StatelessWidget {
                 MyText(
                   paddingTop: 15,
                   text:
-                  'You and $otherPersonName have liked each other. Isn\'t it amazing. We are proud to have made your travel more interesting. Message her and talk about meeting at the layover.',
+                      'You and $otherPersonName have liked each other. Isn\'t it amazing. We are proud to have made your travel more interesting. Message her and talk about meeting at the layover.',
                   size: 12,
                   weight: FontWeight.w300,
                   align: TextAlign.center,
@@ -115,7 +125,9 @@ class MatchDialog extends StatelessWidget {
                       width: 150,
                       child: SimpleButton(
                         buttonText: 'Message',
-                        onTap: () {},
+                        onTap: () {
+                          onMessageTapMethod(context, tUDM, likesDocId);
+                        },
                       ),
                     ),
                   ],

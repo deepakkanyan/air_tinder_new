@@ -27,7 +27,7 @@ class DepartureDetails extends StatelessWidget {
                 ),
                 AuthSubHeading(
                   subHeading:
-                      'Tell us from where you are flying from, lets make out travel fun together',
+                      'Tell us from where you are flying from, lets make our travel fun together',
                 ),
                 Consumer<DepartureDetailsProvider>(
                   builder: (context, provider, child) {

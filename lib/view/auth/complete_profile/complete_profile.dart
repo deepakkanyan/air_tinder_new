@@ -3,6 +3,7 @@ import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/view/auth/complete_profile/about.dart';
 import 'package:air_tinder/view/auth/complete_profile/add_photos.dart';
 import 'package:air_tinder/view/auth/complete_profile/departue_details.dart';
+import 'package:air_tinder/view/auth/complete_profile/flight_number_details.dart';
 import 'package:air_tinder/view/auth/complete_profile/interest.dart';
 import 'package:air_tinder/view/auth/complete_profile/landing_details.dart';
 import 'package:air_tinder/view/auth/complete_profile/layover_details.dart';
@@ -16,9 +17,10 @@ class CompleteProfile extends StatelessWidget {
     AddPhotos(),
     Interest(),
     About(),
-    DepartureDetails(),
-    LayoverDetails(),
-    LandingDetails(),
+    FlightNumberDetails(),
+    // DepartureDetails(),
+    // LayoverDetails(),
+    // LandingDetails(),
   ];
 
   @override

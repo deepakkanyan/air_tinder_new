@@ -144,12 +144,16 @@ class ChatProvider {
   Future<ChatRoomModel?> getChatRooms(
     BuildContext context,
     UserDetailModel targetUser,
+    String likesDocId,
   ) async {
     ChatRoomModel? chatRoom;
-    QuerySnapshot snapshot = await chatRooms
-        .where('participants.${userDetailModel.uId}', isEqualTo: true)
-        .where('participants.${targetUser.uId}', isEqualTo: true)
-        .get();
+    QuerySnapshot snapshot = await chatRooms.where('participants',
+        isEqualTo: [userDetailModel.uId, targetUser.uId]).get();
+
+    if (snapshot.docs.length == 0) {
+      snapshot = await chatRooms.where('participants',
+          isEqualTo: [targetUser.uId, userDetailModel.uId]).get();
+    }
 
     if (snapshot.docs.length > 0) {
       var doc = snapshot.docs[0];
@@ -164,12 +168,13 @@ class ChatProvider {
         roomId: uuid.v1(),
         lastMsg: '',
         lstMsgTime: '',
-        participants: {
-          userDetailModel.uId!: true,
-          targetUser.uId!: true,
-        },
+        participants: [
+          userDetailModel.uId!,
+          targetUser.uId!,
+        ],
       );
       await chatRooms.doc(newChatRoom.roomId).set(newChatRoom.toJson());
+      await likes.doc(likesDocId).update({'chatInitiated': true});
       chatRoom = newChatRoom;
       showMsg(context, 'CHAT ROOM CREATED!', bgColor: kSuccessColor);
     }
@@ -177,13 +182,9 @@ class ChatProvider {
   }
 
   Future gotoChatScreen(
-    BuildContext context,
-    UserDetailModel tUDM,
-  ) async {
-    ChatRoomModel? cRM = await chatProvider.getChatRooms(
-      context,
-      tUDM,
-    );
+      BuildContext context, UserDetailModel tUDM, String likesDocId) async {
+    ChatRoomModel? cRM =
+        await chatProvider.getChatRooms(context, tUDM, likesDocId);
     if (cRM != null) {
       Navigator.push(
         context,

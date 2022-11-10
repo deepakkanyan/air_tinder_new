@@ -3,7 +3,7 @@ class ChatRoomModel {
   String roomId;
   String lastMsg;
   String lstMsgTime;
-  Map<String, dynamic> participants;
+  List<dynamic> participants;
 
   ChatRoomModel({
     required this.createdAt,

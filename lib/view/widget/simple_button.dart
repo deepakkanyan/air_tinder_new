@@ -20,7 +20,9 @@ class SimpleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: onTap,
+      onPressed: () {
+        onTap!();
+      },
       height: height,
       color: bgColor ?? kPrimaryColor,
       elevation: 3,
