@@ -69,12 +69,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
             items.length,
             (index) {
               return BottomNavigationBarItem(
-                icon: ImageIcon(
-                  AssetImage(
-                    items[index],
-                  ),
-                  size: 28,
-                ),
+                icon: ImageIcon(AssetImage(items[index]), size: 28),
                 label: '',
               );
             },

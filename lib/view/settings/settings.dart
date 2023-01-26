@@ -85,31 +85,31 @@ class _SettingsState extends State<Settings> {
               color: kPrimaryColor,
               paddingBottom: 8,
             ),
-            Row(
-              children: [
-                MyText(
-                  text: 'Free plan, ',
-                  size: 14,
-                  weight: FontWeight.w300,
-                  color: kPrimaryColor,
-                ),
-                MyText(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return JetLatchPlusDialog();
-                      },
-                    );
-                  },
-                  text: ' Upgrade now!',
-                  size: 14,
-                  decoration: TextDecoration.underline,
-                  weight: FontWeight.w700,
-                  color: Color(0xffFFDD00),
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     MyText(
+            //       text: 'Free plan, ',
+            //       size: 14,
+            //       weight: FontWeight.w300,
+            //       color: kPrimaryColor,
+            //     ),
+            //     MyText(
+            //       onTap: () {
+            //         showDialog(
+            //           context: context,
+            //           builder: (_) {
+            //             return JetLatchPlusDialog();
+            //           },
+            //         );
+            //       },
+            //       text: ' Upgrade now!',
+            //       size: 14,
+            //       decoration: TextDecoration.underline,
+            //       weight: FontWeight.w700,
+            //       color: Color(0xffFFDD00),
+            //     ),
+            //   ],
+            // ),
             // MyText(
             //   paddingTop: 10,
             //   paddingBottom: 8,

@@ -35,13 +35,12 @@ class ChatHeads extends StatelessWidget {
           Container(
             height: 55,
             child: StreamBuilder(
-              stream: likes
-                  .where(
-                    "direction",
-                    isEqualTo: "twoway",
-                  )
-                  .where("participants", arrayContains: userDetailModel.uId)
-                  .where("chatInitiated", isNotEqualTo: true)
+              stream: fireStore
+                  .collection('Likes')
+                  //+Commented
+                  // .where("direction", isEqualTo: "twoway")
+                  // .where("participants", arrayContains: userDetailModel.uId)
+                  // .where("chatInitiated", isNotEqualTo: true)
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
@@ -50,39 +49,30 @@ class ChatHeads extends StatelessWidget {
                       shrinkWrap: true,
                       physics: BouncingScrollPhysics(),
                       itemCount: snapshot.data!.docs.length,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 7.5,
-                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 7.5),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> doc = snapshot.data!.docs[index]
-                            .data() as Map<String, dynamic>;
+                        Map<String, dynamic> doc = snapshot.data!.docs[index].data() as Map<String, dynamic>;
                         String likesDocId = snapshot.data!.docs[index].id;
                         return FutureBuilder(
-                          future: profiles
-                              .doc(doc["liked"] == userDetailModel.uId
-                                  ? doc["likedBy"]
-                                  : doc["liked"])
+                          future: fireStore
+                              .collection('Profiles')
+                              .doc(doc["liked"] == userDetailModel.uId ? doc["likedBy"] : doc["liked"])
                               .get(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              DocumentSnapshot documentSnapshot =
-                                  snapshot.data as DocumentSnapshot;
-                              UserDetailModel tUDM = UserDetailModel.fromJson(
-                                  documentSnapshot.data()
-                                      as Map<String, dynamic>);
+                              DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot;
+                              UserDetailModel otherUserModel =
+                                  UserDetailModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
 
                               return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7.5,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 7.5),
                                 child: GestureDetector(
                                   onTap: () async {
-                                    await chatProvider.getChatRooms(
-                                        context, tUDM, likesDocId);
+                                    await chatProvider.getChatRooms(context, otherUserModel, likesDocId);
                                   },
                                   child: ProfileImage(
-                                    imgURL: tUDM.profileImgUrl!,
+                                    imgURL: otherUserModel.profileImgUrl!,
                                     size: 55,
                                   ),
                                 ),
@@ -96,16 +86,6 @@ class ChatHeads extends StatelessWidget {
                         );
                       },
                     );
-
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: 7.5,
-                    //   ),
-                    //   child: ProfileImage(
-                    //     imgURL: Assets.imagesDummyMan,
-                    //     size: 55,
-                    //   ),
-                    // );
                   } else if (snapshot.hasError) {
                     log(snapshot.error.toString());
                     return loadingWidget(context);
@@ -119,45 +99,13 @@ class ChatHeads extends StatelessWidget {
                 }
               },
             ),
-
-            // ListView.builder(
-            //   shrinkWrap: true,
-            //   physics: BouncingScrollPhysics(),
-            //   itemCount: 10,
-            //   padding: EdgeInsets.symmetric(
-            //     horizontal: 7.5,
-            //   ),
-            //   scrollDirection: Axis.horizontal,
-            //   itemBuilder: (context, index) {
-            //     return Padding(
-            //       padding: const EdgeInsets.symmetric(
-            //         horizontal: 7.5,
-            //       ),
-            //       child: ProfileImage(
-            //         imgURL: Assets.imagesDummyMan,
-            //         size: 55,
-            //       ),
-            //     );
-            //   },
-            // ),
           ),
-          MyText(
-            text: 'Messages',
-            size: 16,
-            paddingTop: 15,
-            paddingLeft: 15,
-            paddingBottom: 5,
-          ),
+          MyText(text: 'Messages', size: 16, paddingTop: 15, paddingLeft: 15, paddingBottom: 5),
           StreamBuilder(
-            stream: chatRooms
-                .where(
-                  'participants',
-                  arrayContains: userDetailModel.uId,
-                )
-                .orderBy(
-                  'createdAt',
-                  descending: true,
-                )
+            stream: fireStore
+                .collection('ChatRooms')
+                .where('participants', arrayContains: userDetailModel.uId)
+                .orderBy('createdAt', descending: true)
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
@@ -167,38 +115,33 @@ class ChatHeads extends StatelessWidget {
                     physics: BouncingScrollPhysics(),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      ChatRoomModel chatRooms = ChatRoomModel.fromJson(
-                        snapshot.data!.docs[index].data()
-                            as Map<String, dynamic>,
-                      );
-
-                      List<dynamic> _participants = chatRooms.participants;
+                      ChatRoomModel chatHeadModel =
+                          ChatRoomModel.fromJson(snapshot.data!.docs[index].data() as Map<String, dynamic>);
+                      List<dynamic> _participants = chatHeadModel.participants;
+                      log("current user uid :  ${auth.currentUser!.uid}");
+                      log("_participants ${_participants}");
 
                       return FutureBuilder(
-                        future: profiles
-                            .doc(_participants[0] == userDetailModel.uId
-                                ? _participants[1]
-                                : _participants[0])
+                        future: fireStore
+                            .collection('Profiles')
+                            .doc(_participants[0] == userDetailModel.uId ? _participants[1] : _participants[0])
                             .get(),
                         builder: (context, snapShot) {
                           if (snapShot.hasData) {
-                            DocumentSnapshot docSnapShot =
-                                snapShot.data as DocumentSnapshot;
-                            UserDetailModel tUDM = UserDetailModel.fromJson(
-                              docSnapShot.data() as Map<String, dynamic>,
-                            );
+
+                            DocumentSnapshot docSnapShot = snapShot.data as DocumentSnapshot;
+                            UserDetailModel otherUserModel =
+                                UserDetailModel.fromJson(docSnapShot.data() as Map<String, dynamic>);
+                            // log("otherUserModel  ${otherUserModel.toJson()}");
                             return ChatHeadsTiles(
-                              imageURL: tUDM.profileImgUrl!,
-                              name: tUDM.fullName!,
-                              lastMsg: chatRooms.lastMsg,
-                              time: chatRooms.lstMsgTime,
+                              imageURL: otherUserModel.profileImgUrl!,
+                              name: otherUserModel.fullName!,
+                              lastMsg: chatHeadModel.lastMsg,
+                              time: chatHeadModel.lstMsgTime,
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => ChatScreen(
-                                    chatRoomModel: chatRooms,
-                                    targetedUser: tUDM,
-                                  ),
+                                  builder: (_) => ChatScreen(chatHeadModel: chatHeadModel, otherUserModel: otherUserModel),
                                 ),
                               ),
                             );

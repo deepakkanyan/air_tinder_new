@@ -4,12 +4,7 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class ProfileImage extends StatelessWidget {
-  ProfileImage({
-    Key? key,
-    this.size = 38.0,
-    required this.imgURL,
-    this.loadingColor,
-  }) : super(key: key);
+  ProfileImage({Key? key, this.size = 38.0, required this.imgURL, this.loadingColor}) : super(key: key);
 
   final String imgURL;
   double? size;
@@ -35,15 +30,13 @@ class ProfileImage extends StatelessWidget {
           height: size,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return loadingWidget(context,
-                size: 30, color: loadingColor ?? kSecondaryColor);
+            return loadingWidget(context, size: 30, color: loadingColor ?? kSecondaryColor);
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) {
               return child;
             }
-            return loadingWidget(context,
-                size: 30, color: loadingColor ?? kSecondaryColor);
+            return loadingWidget(context, size: 30, color: loadingColor ?? kSecondaryColor);
           },
         ),
       ),

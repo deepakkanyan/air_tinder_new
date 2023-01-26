@@ -14,18 +14,18 @@ import 'package:provider/provider.dart';
 
 class CompleteProfile extends StatelessWidget {
   final List<Widget> children = [
-    AddPhotos(),
-    Interest(),
-    About(),
-    FlightNumberDetails(),
-    // DepartureDetails(),
-    // LayoverDetails(),
-    // LandingDetails(),
+    AddPhotos(), //1
+    Interest(), //2
+    About(), //3
+    FlightNumberDetails(), //4
+    //DepartureDetails(), //5
+    //LayoverDetails(), //6
+    //LandingDetails(), //7
   ];
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<GlobalProvider>(context);
+    GlobalProvider provider = Provider.of<GlobalProvider>(context);
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,

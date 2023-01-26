@@ -3,6 +3,7 @@ import 'package:air_tinder/utils/collections.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
+import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:air_tinder/view/widget/headings.dart';
 import 'package:air_tinder/view/widget/my_button.dart';
 import 'package:air_tinder/view/widget/my_textfield.dart';
@@ -30,6 +31,7 @@ class _AboutState extends State<About> {
         Navigator.pop(context);
         Provider.of<GlobalProvider>(context, listen: false)
             .updateStackIndex(context, 3);
+        // Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomNavBar()));
         aboutCon.clear();
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);

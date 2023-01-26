@@ -42,11 +42,10 @@ class LayoverDetailsProvider with ChangeNotifier {
             'layoverStayTime': landingTimeCon.text,
           },
         });
+        print("Profile Update Successfully !");
+
         Navigator.pop(context);
-        isForEdit
-            ? null
-            : Provider.of<GlobalProvider>(context, listen: false)
-                .updateStackIndex(context, 5);
+        isForEdit ? null : Provider.of<GlobalProvider>(context, listen: false).updateStackIndex(context, 6);
         isForEdit
             ? showMsg(
                 context,

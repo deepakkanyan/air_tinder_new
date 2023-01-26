@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/utils/collections.dart';
@@ -37,11 +39,12 @@ class DepartureDetailsProvider with ChangeNotifier {
             'departureTime': departureTimeCon.text,
           },
         });
+        print("Profile Update Successfully !");
         Navigator.pop(context);
         isForEdit
             ? null
             : Provider.of<GlobalProvider>(context, listen: false)
-                .updateStackIndex(context, 4);
+                .updateStackIndex(context, 5);
         isForEdit
             ? showMsg(
                 context,

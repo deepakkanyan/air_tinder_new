@@ -42,6 +42,8 @@ class LandingDetailsProvider with ChangeNotifier {
             'landingTime': landingTimeCon.text,
           },
         });
+        print("Profile Update Successfully !");
+
         Navigator.pop(context);
         isForEdit
             ? null

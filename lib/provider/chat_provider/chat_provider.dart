@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/main.dart';
@@ -22,11 +23,7 @@ class ChatProvider {
   XFile? pickedImage;
   final format = DateFormat('h:mm a');
 
-  Future blockUser(
-    BuildContext context,
-    ChatRoomModel cRM,
-    UserDetailModel targetUser,
-  ) async {
+  Future blockUser(BuildContext context, ChatRoomModel cRM, UserDetailModel targetUser) async {
     try {
       Navigator.pop(context);
       await chatRooms.doc(cRM.roomId).update(
@@ -50,13 +47,9 @@ class ChatProvider {
     }
   }
 
-  Future pickImage(
-    BuildContext context,
-    ImageSource source,
-    ChatRoomModel cRM,
-  ) async {
+  Future pickImage(BuildContext context, ImageSource source, ChatRoomModel cRM) async {
     try {
-      XFile? _img = await ImagePicker().pickImage(source: source);
+      XFile? _img = await ImagePicker().pickImage(source: source, imageQuality: imageQuality);
       if (_img == null) {
         return;
       } else {
@@ -80,14 +73,9 @@ class ChatProvider {
     }
   }
 
-  Future sendImage(
-    BuildContext context,
-    ChatRoomModel cRM,
-  ) async {
+  Future sendImage(BuildContext context, ChatRoomModel cRM) async {
     Navigator.pop(context);
-    Reference ref = await firebaseStorage
-        .ref()
-        .child('images/chat Images/${DateTime.now().toString()}');
+    Reference ref = await firebaseStorage.ref().child('images/chat Images/${DateTime.now().toString()}');
     await ref.putFile(File(pickedImage!.path));
     await ref.getDownloadURL().then(
       (value) async {
@@ -99,11 +87,7 @@ class ChatProvider {
           mediaType: 'image',
           isSeen: false,
         );
-        chatRooms
-            .doc(cRM.roomId)
-            .collection('messages')
-            .doc(mMM.msgId)
-            .set(mMM.toJson());
+        chatRooms.doc(cRM.roomId).collection('messages').doc(mMM.msgId).set(mMM.toJson());
         cRM.lastMsg = mMM.msg;
         cRM.lstMsgTime = mMM.time;
         chatRooms.doc(cRM.roomId).set(cRM.toJson());
@@ -112,10 +96,23 @@ class ChatProvider {
     );
   }
 
-  void sendTextMsg(
-    BuildContext context,
-    ChatRoomModel cRM,
-  ) async {
+  void sendTextMsg(BuildContext context, ChatRoomModel cRM, UserDetailModel? otherUserModel) async {
+    log("current user id : ${auth.currentUser!.uid}");
+    log("other user id : ${otherUserModel!.uId}");
+    // await profiles.doc(otherUserModel.uId).get().then((value) {
+    //   print(" .then((value)");
+    //   if (value.exists) {
+    //     log(" \n  value.exists ${value.data()}  \n");
+    //
+    //     if (value['blockByIds'].asMap().containsValue(auth.currentUser!.uid)) {
+    //       showMsg(context, 'You block this user cannot send msg', bgColor: kSuccessColor);
+    //     } else {
+    //       showMsg(context, 'You  can  send msg', bgColor: kSuccessColor);
+    //     }
+    //   } else {
+    //     print("value not exist ");
+    //   }
+    // });
     String msg = sendCon.text;
     sendCon.clear();
 
@@ -128,7 +125,8 @@ class ChatProvider {
         mediaType: 'text',
         isSeen: false,
       );
-      chatRooms
+      await FirebaseFirestore.instance
+          .collection('ChatRooms')
           .doc(cRM.roomId)
           .collection('messages')
           .doc(mM.msgId)
@@ -141,25 +139,29 @@ class ChatProvider {
     }
   }
 
-  Future<ChatRoomModel?> getChatRooms(
-    BuildContext context,
-    UserDetailModel targetUser,
-    String likesDocId,
-  ) async {
+  Future<ChatRoomModel?> getChatRooms(BuildContext context, UserDetailModel targetUser, String likesDocId) async {
     ChatRoomModel? chatRoom;
-    QuerySnapshot snapshot = await chatRooms.where('participants',
-        isEqualTo: [userDetailModel.uId, targetUser.uId]).get();
+    QuerySnapshot snapshot = await fireStore.collection('ChatRooms').where(
+      'participants',
+      isEqualTo: [
+        userDetailModel.uId,
+        targetUser.uId,
+      ],
+    ).get();
 
     if (snapshot.docs.length == 0) {
-      snapshot = await chatRooms.where('participants',
-          isEqualTo: [targetUser.uId, userDetailModel.uId]).get();
+      snapshot = await fireStore.collection('ChatRooms').where(
+        'participants',
+        isEqualTo: [
+          targetUser.uId,
+          userDetailModel.uId,
+        ],
+      ).get();
     }
 
     if (snapshot.docs.length > 0) {
       var doc = snapshot.docs[0];
-      ChatRoomModel existingChatRoom = ChatRoomModel.fromJson(
-        doc.data() as Map<String, dynamic>,
-      );
+      ChatRoomModel existingChatRoom = ChatRoomModel.fromJson(doc.data() as Map<String, dynamic>);
       chatRoom = existingChatRoom;
       showMsg(context, 'CHAT ROOM ALREADY CREATED!');
     } else {
@@ -172,6 +174,8 @@ class ChatProvider {
           userDetailModel.uId!,
           targetUser.uId!,
         ],
+        isBlockById: "",
+        isBlockByName: '',
       );
       await chatRooms.doc(newChatRoom.roomId).set(newChatRoom.toJson());
       await likes.doc(likesDocId).update({'chatInitiated': true});
@@ -181,17 +185,15 @@ class ChatProvider {
     return chatRoom;
   }
 
-  Future gotoChatScreen(
-      BuildContext context, UserDetailModel tUDM, String likesDocId) async {
-    ChatRoomModel? cRM =
-        await chatProvider.getChatRooms(context, tUDM, likesDocId);
+  Future gotoChatScreen(BuildContext context, UserDetailModel tUDM, String likesDocId) async {
+    ChatRoomModel? cRM = await chatProvider.getChatRooms(context, tUDM, likesDocId);
     if (cRM != null) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) {
           return ChatScreen(
-            chatRoomModel: cRM,
-            targetedUser: tUDM,
+            chatHeadModel: cRM,
+            otherUserModel: tUDM,
           );
         }),
       );

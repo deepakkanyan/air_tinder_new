@@ -59,8 +59,7 @@ class _AddPhotosState extends State<AddPhotos> {
           'dateOfBirth': dobCon.text,
         });
         Navigator.pop(context);
-        Provider.of<GlobalProvider>(context, listen: false)
-            .updateStackIndex(context, 1);
+        Provider.of<GlobalProvider>(context, listen: false).updateStackIndex(context, 1);
         await _uploadMultipleImage();
         setState(() {
           _pickedProfileImage = null;
@@ -78,7 +77,7 @@ class _AddPhotosState extends State<AddPhotos> {
 
   Future _getProfileImage(ImageSource source) async {
     try {
-      final img = await ImagePicker().pickImage(source: source);
+      final img = await ImagePicker().pickImage(source: source ,imageQuality: imageQuality);
       if (img == null) {
         return;
       } else {
@@ -131,9 +130,7 @@ class _AddPhotosState extends State<AddPhotos> {
           additionalImages.add(value);
         });
       });
-      await profiles.doc(auth.currentUser!.uid).update({
-        'additionalImages': additionalImages,
-      });
+      await profiles.doc(auth.currentUser!.uid).update({'additionalImages': additionalImages});
     }
   }
 
@@ -147,6 +144,7 @@ class _AddPhotosState extends State<AddPhotos> {
 
   @override
   Widget build(BuildContext context) {
+    log("year ${DateTime.now().year - 18}");
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -160,12 +158,9 @@ class _AddPhotosState extends State<AddPhotos> {
                 heading: 'When did this beautiful face land on this planet?',
               ),
               AuthSubHeading(
-                subHeading:
-                    'Add your DOB and beautiful photos, lets get the spark going.',
+                subHeading: 'Add your DOB and beautiful photos, lets get the spark going.',
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Center(
                 child: Stack(
                   children: [
@@ -187,10 +182,8 @@ class _AddPhotosState extends State<AddPhotos> {
                             context: context,
                             builder: (context) {
                               return PickImage(
-                                pickFromCamera: () =>
-                                    _getProfileImage(ImageSource.camera),
-                                pickFromGallery: () =>
-                                    _getProfileImage(ImageSource.gallery),
+                                pickFromCamera: () => _getProfileImage(ImageSource.camera),
+                                pickFromGallery: () => _getProfileImage(ImageSource.gallery),
                               );
                             },
                             isScrollControlled: true,
@@ -204,8 +197,7 @@ class _AddPhotosState extends State<AddPhotos> {
                                   errorBuilder: (context, error, stackTrace) {
                                     return loadingWidget(context);
                                   },
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
+                                  loadingBuilder: (context, child, loadingProgress) {
                                     if (loadingProgress == null) {
                                       return child;
                                     }
@@ -240,9 +232,7 @@ class _AddPhotosState extends State<AddPhotos> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 30,
-              ),
+              SizedBox(height: 30),
               Row(
                 children: List.generate(
                   _additionalImages.isNotEmpty ? 3 : 3,
@@ -271,13 +261,9 @@ class _AddPhotosState extends State<AddPhotos> {
                   },
                 ),
               ),
-              SizedBox(
-                height: 30,
-              ),
+              SizedBox(height: 30),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 4.5,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4.5),
                 child: DateOfBirthField(
                   controller: dobCon,
                   onCalenderTap: () {
@@ -295,9 +281,7 @@ class _AddPhotosState extends State<AddPhotos> {
             ],
           ),
         ),
-        SizedBox(
-          height: 15,
-        ),
+        SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -352,15 +336,20 @@ class _AddPhotosState extends State<AddPhotos> {
                       primaryColor: Colors.red,
                     ),
                     child: CupertinoDatePicker(
-                      initialDateTime: _dateTime,
+                      initialDateTime: DateTime(
+                        DateTime.now().year - 18,
+                        DateTime.now().month,
+                        DateTime.now().day,
+                      ),
                       mode: CupertinoDatePickerMode.date,
                       backgroundColor: kPrimaryColor,
-                      minimumYear: 1900,
-                      maximumYear: DateTime.now().year,
+                      minimumYear: 1970,
+                      maximumYear: DateTime.now().year - 18,
                       onDateTimeChanged: (value) {
                         setState(
                           () {
                             _dateTime = value;
+                            log("selected date $_dateTime");
                           },
                         );
                       },
@@ -368,15 +357,11 @@ class _AddPhotosState extends State<AddPhotos> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   child: MyButton(
                     onTap: () {
                       setState(() {
-                        dobCon.text =
-                            DateFormat.yMEd().format(_dateTime).toString();
+                        dobCon.text = DateFormat.yMEd().format(_dateTime).toString();
                       });
                       Navigator.pop(context);
                     },

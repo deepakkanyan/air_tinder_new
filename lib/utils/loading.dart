@@ -1,10 +1,7 @@
 import 'package:air_tinder/constant/color.dart';
 import 'package:flutter/material.dart';
 
-Future<dynamic> loadingDialog(
-  BuildContext context, {
-  double? size = 50.0,
-}) {
+Future<dynamic> loadingDialog(BuildContext context, {double? size = 50.0}) {
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -22,11 +19,7 @@ Future<dynamic> loadingDialog(
   );
 }
 
-Widget loadingWidget(
-  BuildContext context, {
-  double? size = 50.0,
-  Color? color,
-}) {
+Widget loadingWidget(BuildContext context, {double? size = 50.0, Color? color}) {
   return Center(
     child: SizedBox(
       height: size,

@@ -5,8 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-
+import 'package:uuid/uuid.dart'; 
+//1958
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -14,15 +14,16 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => GlobalProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => GlobalProvider()),
       ],
       child: MyApp(),
     ),
   );
 }
+//+Hello
 
+
+//
 var uuid = Uuid();
 
 class MyApp extends StatelessWidget {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
-      title: 'Air Tinder',
+      title: 'Jetlatch',
       theme: lightTheme,
       themeMode: ThemeMode.light,
       initialRoute: AppLinks.splashScreen,

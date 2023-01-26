@@ -8,11 +8,7 @@ import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:flutter/material.dart';
 
 class BlockUserButton extends StatelessWidget {
-  const BlockUserButton({
-    Key? key,
-    required this.targetUser,
-    required this.cRM,
-  }) : super(key: key);
+  const BlockUserButton({Key? key, required this.targetUser, required this.cRM}) : super(key: key);
 
   final ChatRoomModel cRM;
   final UserDetailModel targetUser;
@@ -60,8 +56,7 @@ class BlockUserButton extends StatelessWidget {
                         builder: (_) {
                           return CustomDialog(
                             heading: 'Do you want to block this user?',
-                            content:
-                                'If you block them they will not be able to message you again.',
+                            content: 'If you block them they will not be able to message you again.',
                             onNoTap: () => Navigator.pop(context),
                             onYesTap: () => chatProvider.blockUser(
                               context,

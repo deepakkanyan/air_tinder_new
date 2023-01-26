@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 Widget agreeToTerms() {
   return MyText(
     text:
-    'By signing up to AirTinder to agree to our EULA, privacy policy and terms of use.',
+        'By signing up to JetLatch to agree to our EULA, privacy policy and terms of use.',
     color: kPrimaryColor,
     size: 12,
     weight: FontWeight.w300,

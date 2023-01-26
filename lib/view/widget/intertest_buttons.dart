@@ -35,10 +35,7 @@ class InterestButtons extends StatelessWidget {
         splashColor: kSecondaryColor.withOpacity(0.05),
         highlightColor: kSecondaryColor.withOpacity(0.05),
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 4,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
           child: MyText(
             text: interest,
             color: isSelected! ? kPrimaryColor : kTertiaryColor,

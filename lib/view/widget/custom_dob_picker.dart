@@ -5,18 +5,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CustomDatePicker extends StatelessWidget {
-  CustomDatePicker({
+class CustomDOBDatePicker extends StatelessWidget {
+  CustomDOBDatePicker({
     required this.initialDateTime,
     required this.onDateTimeChanged,
     required this.heading,
     required this.onDoneTap,
+    this.maximumDate,
+    this.maxYear,
   });
 
   final DateTime initialDateTime;
   final ValueChanged<DateTime> onDateTimeChanged;
   final VoidCallback onDoneTap;
   final String heading;
+  final int? maxYear;
+  final DateTime? maximumDate;
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +63,11 @@ class CustomDatePicker extends StatelessWidget {
                     ),
                     child: CupertinoDatePicker(
                       initialDateTime: initialDateTime,
+                      maximumDate: maximumDate,
                       mode: CupertinoDatePickerMode.date,
                       backgroundColor: kPrimaryColor,
                       minimumYear: 1900,
+                      maximumYear: maxYear ?? DateTime.now().year,
                       onDateTimeChanged: onDateTimeChanged,
                     ),
                   ),

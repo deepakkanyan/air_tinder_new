@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:air_tinder/constant/color.dart';
 import 'package:air_tinder/generated/assets.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
@@ -6,6 +8,7 @@ import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/auth/complete_profile/completion_checker.dart';
 import 'package:air_tinder/view/auth/signup.dart';
 import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:air_tinder/view/splash_screen/splash_screen.dart';
 import 'package:air_tinder/view/widget/agree_to_terms.dart';
 import 'package:air_tinder/view/widget/auth_fields.dart';
 import 'package:air_tinder/view/widget/headings.dart';
@@ -13,6 +16,7 @@ import 'package:air_tinder/view/widget/height_width.dart';
 import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/simple_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -25,12 +29,7 @@ class _LoginState extends State<Login> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(
-      Duration(
-        seconds: 1,
-      ),
-      () => triggerBottomSheet(),
-    );
+    Future.delayed(Duration(seconds: 1), () => triggerBottomSheet());
   }
 
   void triggerBottomSheet() {
@@ -53,18 +52,13 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        padding: EdgeInsets.only(
-          top: height(0.15, context),
-        ),
+        padding: EdgeInsets.only(top: height(0.15, context)),
         height: height(1.0, context),
         width: width(1.0, context),
         decoration: loginBg,
         child: Column(
           children: [
-            Image.asset(
-              Assets.imagesWhiteLogo,
-              height: 76.65,
-            ),
+            Image.asset(Assets.imagesWhiteLogo, height: 76.65),
           ],
         ),
       ),
@@ -83,28 +77,50 @@ class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
   late TextEditingController passCon;
 
   Future<void> login() async {
-    if (emailCon.text.isEmpty &&
-        emailCon.text == '' &&
-        passCon.text.isEmpty &&
-        passCon.text == '') {
+    if (emailCon.text.isEmpty && emailCon.text == '' && passCon.text.isEmpty && passCon.text == '') {
       showMsg(context, 'Field cannot be empty!');
     } else {
       try {
         loadingDialog(context);
-        await auth.signInWithEmailAndPassword(
-          email: emailCon.text.trim(),
-          password: passCon.text.trim(),
-        );
-        Navigator.pop(context);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CompletionChecker(uID: auth.currentUser!.uid),
-          ),
-              (route) => false,
-        );
-        emailCon.clear();
-        passCon.clear();
+        UserCredential userCredential =
+            await auth.signInWithEmailAndPassword(email: emailCon.text.trim(), password: passCon.text.trim());
+
+        await fireStore.collection('ReportedUserCount').doc(userCredential.user!.uid).get().then((value) async {
+          if (value.exists) {
+
+            if (value['userReportCount'] > 3) {
+              log("inside value['userReportCount'] > 3 ");
+
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+              emailCon.clear();
+              passCon.clear();
+              showMsg(context, 'Your account is deactivated');
+
+              // await Future.delayed(Duration(seconds: 1));
+              // Navigator.pushAndRemoveUntil(context,
+              //     MaterialPageRoute(builder: (_) => CompletionChecker(uID: auth.currentUser!.uid)), (route) => false);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SplashScreen()),
+              );
+            } else {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (_) => CompletionChecker(uID: auth.currentUser!.uid)), (route) => false);
+              emailCon.clear();
+              passCon.clear();
+            }
+            Navigator.pop(context);
+          } else {
+            log("inside else condition value not exist ");
+            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(
+                context, MaterialPageRoute(builder: (_) => CompletionChecker(uID: auth.currentUser!.uid)), (route) => false);
+            emailCon.clear();
+            passCon.clear();
+          }
+        });
       } on FirebaseAuthException catch (e) {
         Navigator.pop(context);
         showMsg(context, e.message.toString());
@@ -166,7 +182,7 @@ class _LoginBottomSheetDataState extends State<LoginBottomSheetData> {
             hintText: '123456',
             isObSecure: true,
             isPasswordField: true,
-            controller:passCon,
+            controller: passCon,
           ),
           MyText(
             text: 'Forgot your password?',

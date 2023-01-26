@@ -1,3 +1,4 @@
+import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class FlightNumberDetailsProvider with ChangeNotifier {
@@ -373,5 +374,56 @@ class FlightNumberDetailsProvider with ChangeNotifier {
   };
 
   void onDepartureDateChanged(value) {}
-  void onDepartureDateDoneTapped() {}
+  void onDepartureDateDoneTapped(context) {
+    // Navigator.push(context, MaterialPageRoute(builder: (context)=>BottomNavBar()));
+  }
+
+  // Future<void> uploadData(BuildContext context, bool isForEdit) async {
+  //   if (cityCon.text.isEmpty && cityCon.text == '') {
+  //     showMsg(context, 'Please provide layover city name');
+  //   } else if (airportCon.text.isEmpty && airportCon.text == '') {
+  //     showMsg(context, 'Please provide layover airport name');
+  //   } else if (landingDateCon.text.isEmpty && landingDateCon.text == '') {
+  //     showMsg(context, 'Please enter layover landing date');
+  //   } else if (landingTimeCon.text.isEmpty && landingTimeCon.text == '') {
+  //     showMsg(context, 'Please enter layover landing time');
+  //   } else if (stayCon.text.isEmpty && stayCon.text == '') {
+  //     showMsg(context, 'Please enter layover stay time');
+  //   } else {
+  //     try {
+  //       loadingDialog(context);
+  //       await profiles.doc(auth.currentUser!.uid).update({
+  //         'layoverDetails': {
+  //           'layoverCity': cityCon.text,
+  //           'layoverAirPort': airportCon.text,
+  //           'layoverLandingDate': landingDateCon.text,
+  //           'layoverLandingTime': landingTimeCon.text,
+  //           'layoverStayTime': landingTimeCon.text,
+  //         },
+  //       });
+  //       print("Profile Update Successfully !");
+
+  //       Navigator.pop(context);
+  //       isForEdit
+  //           ? null
+  //           : Provider.of<GlobalProvider>(context, listen: false)
+  //               .updateStackIndex(context, 6);
+  //       isForEdit
+  //           ? showMsg(
+  //               context,
+  //               'Successfully Updated!',
+  //               bgColor: kSuccessColor,
+  //             )
+  //           : null;
+  //       cityCon.clear();
+  //       airportCon.clear();
+  //       landingDateCon.clear();
+  //       landingTimeCon.clear();
+  //       stayCon.clear();
+  //     } on FirebaseAuthException catch (e) {
+  //       Navigator.pop(context);
+  //       showMsg(context, e.message.toString());
+  //     }
+  //   }
+  // }
 }

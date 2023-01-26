@@ -8,10 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SendImagePreview extends StatelessWidget {
-  SendImagePreview({
-    required this.file,
-    required this.chatRoomModel,
-  });
+  SendImagePreview({required this.file, required this.chatRoomModel});
 
   final XFile file;
   ChatRoomModel chatRoomModel;

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class GlobalProvider with ChangeNotifier {
@@ -5,6 +7,7 @@ class GlobalProvider with ChangeNotifier {
 
   void updateStackIndex(BuildContext context, int index) {
     stackIndex = index;
+    log("stackIndex : ${stackIndex}");
     notifyListeners();
   }
 

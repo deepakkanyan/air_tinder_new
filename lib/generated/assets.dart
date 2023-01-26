@@ -26,7 +26,8 @@ class Assets {
   static const String imagesGirl = 'assets/images/girl.png';
   static const String imagesHeartSolid = 'assets/images/heart_solid.png';
   static const String imagesHome = 'assets/images/home.png';
-  static const String imagesImagePlaceholder = 'assets/images/image_placeholder.png';
+  static const String imagesImagePlaceholder =
+      'assets/images/image_placeholder.png';
   static const String imagesInfo = 'assets/images/info.png';
   static const String imagesLike = 'assets/images/like.png';
   static const String imagesLoading = 'assets/images/loading.json';
@@ -49,5 +50,6 @@ class Assets {
   static const String imagesUpgrade = 'assets/images/upgrade.png';
   static const String imagesUser = 'assets/images/user.png';
   static const String imagesWhiteLogo = 'assets/images/white_logo.png';
-
+  static const String circlePlusSolid = 'assets/images/circle-plus-solid.png';
+  static const String circleMinusSolid = 'assets/images/circle-minus-solid.png';
 }
