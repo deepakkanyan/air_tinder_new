@@ -1,10 +1,10 @@
 class ChatRoomModel {
-  String createdAt;
-  String roomId;
-  String lastMsg;
-  String lstMsgTime;
-  String isBlockByName;
-  String isBlockById;
+  String? createdAt;
+  String? roomId;
+  String? lastMsg;
+  String? lstMsgTime;
+  String? isBlockByName;
+  String? isBlockById;
   List<dynamic> participants;
 
   ChatRoomModel({

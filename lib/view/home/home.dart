@@ -133,14 +133,14 @@ class _HomeState extends State<Home> {
             appBar: BlackLogoAppBar(),
             body: StreamBuilder(
               stream: profiles
-                  // .where('uId', isNotEqualTo: userDetailModel.uId)
-                  // .where('gender', isEqualTo: userDetailModel.gender == "Male" ? "Female" : "Male")
-                  // .where('layoverDetails.${"layoverAirPort"}',
-                  //     isEqualTo: userDetailModel.layoverDetails!["layoverAirPort"])
-                  // .where('layoverDetails.${"layoverCity"}',
-                  //     isEqualTo: userDetailModel.layoverDetails!["layoverCity"])
-                  // .where('layoverDetails.${"layoverLandingDate"}',
-                  //     isEqualTo: userDetailModel.layoverDetails!["layoverLandingDate"])
+                  .where('uId', isNotEqualTo: userDetailModel.uId)
+                  .where('gender', isEqualTo: userDetailModel.gender == "Male" ? "Female" : "Male")
+                 /* .where('layoverDetails.${"layoverAirPort"}',
+                      isEqualTo: userDetailModel.layoverDetails?["layoverAirPort"])
+                  .where('layoverDetails.${"layoverCity"}',
+                      isEqualTo: userDetailModel.layoverDetails!["layoverCity"])
+                  .where('layoverDetails.${"layoverLandingDate"}',
+                      isEqualTo: userDetailModel.layoverDetails!["layoverLandingDate"])*/
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.active) {
@@ -184,15 +184,18 @@ class _HomeState extends State<Home> {
                                 DocumentSnapshot docSnapShot = profilesToPopulate[index];
                                 UserDetailModel tUDM =
                                     UserDetailModel.fromJson(docSnapShot.data() as Map<String, dynamic>);
-                                return SwipeAbleCards(
+
+                                if(tUDM.additionalImages == null){
+                                  return Text("data");
+                                }
+                                return  SwipeAbleCards(
                                   images: tUDM.additionalImages!,
                                   name: tUDM.fullName!,
-                                  flyingFrom:
-                                      '${tUDM.departureDetails!['departureAirPort'] ?? ""}, ${tUDM.departureDetails!['departureCity'] ?? ""}',
+                                  flyingFrom:  '${tUDM.departureDetails?['departureAirPort'] ?? ""}, ${tUDM.departureDetails?['departureCity'] ?? ""}',
                                   layover:
-                                      '${tUDM.layoverDetails!['layoverAirPort'] ?? ""}, ${tUDM.layoverDetails!['layoverCity'] ?? ""}',
+                                      '${tUDM.layoverDetails?['layoverAirPort'] ?? ""}, ${tUDM.layoverDetails?['layoverCity'] ?? ""}',
                                   landingAt:
-                                      '${tUDM.landingDetails!['landingAirport'] != null ? tUDM.landingDetails!['landingAirport'] : ""}, ${tUDM.landingDetails!['landingCity'] ?? ""}' ??
+                                      '${tUDM.landingDetails?['landingAirport'] != null ? tUDM.landingDetails!['landingAirport'] : ""}, ${tUDM.landingDetails?['landingCity'] ?? ""}' ??
                                           "",
                                   onDislikeTap: () {
                                     _tCardController.forward(direction: SwipDirection.Left);

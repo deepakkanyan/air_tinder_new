@@ -27,18 +27,18 @@ class _SettingsState extends State<Settings> {
   void getUserData() {
     setState(() {
       profileImageUrl = '';
-      departureCity = userDetailModel.departureDetails!['departureCity'];
-      departureAirport = userDetailModel.departureDetails!['departureAirPort'];
-      layoverCity = userDetailModel.layoverDetails!['layoverCity'];
-      layoverAirport = userDetailModel.layoverDetails!['layoverAirPort'];
-      landingCity = userDetailModel.landingDetails!['landingCity'];
-      landingAirport = userDetailModel.landingDetails!['landingAirport'];
+    //  departureCity = userDetailModel.departureDetails?['departureCity'];
+   //   departureAirport = userDetailModel.departureDetails?['departureAirPort'];
+      layoverCity = userDetailModel.layoverDetails?['layoverCity'] ?? "";
+      layoverAirport = userDetailModel.layoverDetails?['layoverAirPort']?? "";
+      landingCity = userDetailModel.landingDetails?['landingCity']?? "";
+      landingAirport = userDetailModel.landingDetails?['landingAirport']?? "";
     });
   }
 
   String profileImageUrl = '';
-  String departureCity = '';
-  String departureAirport = '';
+  //String departureCity = '';
+  //String departureAirport = '';
   String layoverCity = '';
   String layoverAirport = '';
   String landingCity = '';
@@ -121,10 +121,10 @@ class _SettingsState extends State<Settings> {
             SizedBox(
               height: 15,
             ),
-            IconTiles(
+          /*  IconTiles(
               icon: Assets.imagesDeparture,
               title: 'Flying from: $departureAirport Airport, $departureCity',
-            ),
+            ),*/
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 10,

@@ -57,7 +57,7 @@ class ChatHeads extends StatelessWidget {
                         return FutureBuilder(
                           future: fireStore
                               .collection('Profiles')
-                              .doc(doc["liked"] == userDetailModel.uId ? doc["likedBy"] : doc["liked"])
+                              .doc(doc["liked"] == (userDetailModel.uId ?? '') ? doc["likedBy"] : doc["liked"])
                               .get(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -136,8 +136,8 @@ class ChatHeads extends StatelessWidget {
                             return ChatHeadsTiles(
                               imageURL: otherUserModel.profileImgUrl!,
                               name: otherUserModel.fullName!,
-                              lastMsg: chatHeadModel.lastMsg,
-                              time: chatHeadModel.lstMsgTime,
+                              lastMsg: chatHeadModel.lastMsg ?? "",
+                              time: chatHeadModel.lstMsgTime ?? "",
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(

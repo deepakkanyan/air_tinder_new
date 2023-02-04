@@ -5,14 +5,17 @@ import 'package:air_tinder/generated/assets.dart';
 import 'package:air_tinder/provider/flight_details/flight_number_details_provider.dart';
 import 'package:air_tinder/provider/global_provider/global_provider.dart';
 import 'package:air_tinder/utils/amadeus_utility.dart';
+import 'package:air_tinder/utils/collections.dart';
 import 'package:air_tinder/utils/custom_flush_bar.dart';
+import 'package:air_tinder/utils/instances.dart';
+import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:air_tinder/view/widget/custom_date_picker.dart';
 import 'package:air_tinder/view/widget/custom_time_picker.dart';
 import 'package:air_tinder/view/widget/headings.dart';
 import 'package:air_tinder/view/widget/my_button.dart';
-import 'package:air_tinder/view/widget/my_text.dart';
 import 'package:air_tinder/view/widget/my_textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -29,203 +32,19 @@ class FlightNumberDetails extends StatefulWidget {
 class _FlightNumberDetailsState extends State<FlightNumberDetails> {
   String airlineName = "";
 
-  List<String> airlines = [
-    "ABSA",
-    "ANA All Nippon Cargo",
-    "Adria Airways",
-    "Aegean Airlines",
-    "Aer Lingus Cargo",
-    "AeroUnion",
-    "Aeroflot",
-    "Aeromexico Cargo",
-    "Aeromexpress Cargo",
-    "Aerosvit",
-    "Africa West",
-    "Air ALM",
-    "Air Algerie",
-    "Air Armenia",
-    "Air Astana",
-    "Air Baltic",
-    "Air Canada",
-    "Air China",
-    "Air Europa Cargo",
-    "Air France",
-    "Air Greenland",
-    "Air Hong Kong",
-    "Air India",
-    "Air Jamaica",
-    "Air Macau",
-    "Air Madagascar",
-    "Air Malta",
-    "Air Mauritius",
-    "Air Moldova",
-    "Air New Zealand",
-    "Air Niugini",
-    "Air Seychelles",
-    "AirBridge Cargo",
-    "Alaska Airlines",
-    "Alitalia",
-    "American Airlines",
-    "Amerijet International",
-    "Arrow Air",
-    "Asiana Airlines",
-    "Atlantic Southeast Airlines",
-    "Atlas Air",
-    "Austrian Cargo",
-    "Avient",
-    "Azerbaijan Airlines",
-    "Biman Bangladesh",
-    "British Airways",
-    "British Midland Airways",
-    "Brussels Airlines",
-    "Bulgaria Air",
-    "Buraq Air Transport (Arabic only)",
-    "CAL Cargo Air Lines",
-    "Cameroon Airlines",
-    "Canadian Airlines Int'l",
-    "CargoItalia (alternate)",
-    "Cargolux Airlines",
-    "Cargolux Italia",
-    "Caribbean Airlines",
-    "Cathay Pacific Airways",
-    "Cayman Airways",
-    "Centurion Air Cargo",
-    "China Airlines",
-    "China Cargo Airlines",
-    "China Eastern Airlines",
-    "China Southern Airlines",
-    "Cielos Airlines",
-    "Comair",
-    "Condor Flugdienst",
-    "Continental Airlines",
-    "Copa Airlines Cargo",
-    "Coyne Airways",
-    "Croatia Airlines",
-    "Cyprus Airways",
-    "Czech Airlines",
-    "DHL Aviation / European Air Transport",
-    "DHL Aviation/DHL Airways",
-    "Delta Air Lines",
-    "Dragonair",
-    "EL ALLY, ETIHAD Airways",
-    "Egyptair",
-    "Emirates",
-    "Estonian Air",
-    "Ethiopian Airlines",
-    "Eva Airways",
-    "Far Eastern Air Transport",
-    "Fedex",
-    "Finnair",
-    "Florida West International Airways",
-    "Garuda Indonesia",
-    "Global Aviation and Services",
-    "Grandstar Cargo",
-    "Great Wall Airlines",
-    "Gulf Air",
-    "Hainan Airlines (Chinese)",
-    "Hong Kong Airlines",
-    "Iberia",
-    "Icelandair",
-    "Indian Airlines",
-    "Insel Air Cargo",
-    "Iran Air",
-    "JAT Airways",
-    "Jade Cargo International",
-    "Japan Air System",
-    "Japan Airlines",
-    "Jet Airways",
-    "KD Avia",
-    "KLM Cargo",
-    "Kalitta Air",
-    "Kenya Airways",
-    "Kingfisher Airlines",
-    "Korean Air",
-    "Kuwait Airways",
-    "LACSA Airlines of Costa Rica",
-    "LAN Chile",
-    "LIAT Airlines",
-    "LOT Polish Airlines",
-    "LTU (Leisure Cargo)",
-    "Lauda Air",
-    "Libyan Airlines",
-    "Lufthansa Cargo AG",
-    "MASAir",
-    "MNG Airlines",
-    "Malaysian Airline System",
-    "Malev Hungarian Airlines",
-    "Mandarin Airlines",
-    "Mario's Air",
-    "Martinair Cargo",
-    "Middle East Airlines",
-    "National Air Cargo",
-    "Nippon Cargo Airlines",
-    "Northern Air Cargo",
-    "Northwest Airlines (alternate site)",
-    "Olympic Airways",
-    "Pakistan Int'l Airlines",
-    "Philippine Airlines",
-    "Polar Air Cargo",
-    "Qantas Airways",
-    "Qatar Airways",
-    "Royal Air Maroc",
-    "Royal Brunei Airlines",
-    "Royal Jordanian",
-    "SAC South American Airways",
-    "SAS-Scandinavian Airlines System",
-    "SATA Air Acores",
-    "Saudi Arabian Airlines",
-    "Shandong Airlines (Chinese)",
-    "Shanghai Airlines Cargo",
-    "Shanghai Airlines",
-    "Shenzhen Airlines (Chinese)",
-    "Siberia Airlines",
-    "Sichuan Airlines",
-    "Singapore Airlines",
-    "Sky West Airlines",
-    "South African Airways",
-    "Southwest Airlines",
-    "SriLankan Cargo",
-    "Sun Express",
-    "Swiss",
-    "Syrian Arab Airlines",
-    "TAAG Angola Airlines",
-    "TAB Cargo",
-    "TACA",
-    "TAM Brazilian Airlines",
-    "TAP Air Portugal",
-    "TNT Airways",
-    "Tampa Airlines",
-    "Thai Airways",
-    "Trans Mediterranean Airways",
-    "Turkish Airlines",
-    "UPS Air Cargo",
-    "USAirways",
-    "Ukraine Int'l Airlines",
-    "United Airlines Cargo",
-    "VARIG Brazilian Airlines",
-    "Vietnam Airlines",
-    "Virgin Atlantic",
-    "Xiamen Airlines",
-    "Yangtze River Express Airlines",
-    "Yemenia Yemen Airways",
-    "more AWB tracking"
-  ];
-
   List<LayoverModel> layovers = [
     LayoverModel(),
   ];
 
-  void updateLayovers(
-      {required int index,
-      String? layoverLocation,
-      DateTime? layover_date,
-      DateTime? layoverStarttime,
-      DateTime? layoverEndTime}) {
+  void updateLayovers({required int index,
+    String? layoverLocation,
+    DateTime? layover_date,
+    DateTime? layoverStarttime,
+    DateTime? layoverEndTime}) {
     layovers[index].layoverLocation = layoverLocation == null
         ? layovers[index].layoverLocation
         : layoverLocation;
-    layovers[index].layover_date =
-        layover_date == null ? layovers[index].layover_date : layover_date;
+    layovers[index].layover_date = layover_date == null ? layovers[index].layover_date : layover_date;
     layovers[index].layoverStarttime = layoverStarttime == null
         ? layovers[index].layoverStarttime
         : layoverStarttime;
@@ -264,13 +83,16 @@ class _FlightNumberDetailsState extends State<FlightNumberDetails> {
                 AuthHeading(heading: "Please enter your flight details"),
                 AuthSubHeading(
                     subHeading:
-                        "Tell us about the flight and layover. We can't wait to hear that. Let's get you to the best layover of your life."),
+                    "Tell us about the flight and layover. We can't wait to hear that. Let's get you to the best layover of your life."),
                 Consumer<FlightNumberDetailsProvider>(
                   builder: (context, provider, child) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ...layovers.asMap().entries.map((layover) {
+                        ...layovers
+                            .asMap()
+                            .entries
+                            .map((layover) {
                           return LayoverInputWidget(
                               layover.key, updateLayovers);
                         }),
@@ -387,7 +209,7 @@ class _FlightNumberDetailsState extends State<FlightNumberDetails> {
                     SizedBox(
                       width: 167,
                       child: MyButton(
-                        onTap: () => uploadData(),
+                        onTap: () => uploadDataNow(context, false)//uploadData(context,false),
                       ),
                     ),
                   ],
@@ -400,18 +222,66 @@ class _FlightNumberDetailsState extends State<FlightNumberDetails> {
     );
   }
 
-  uploadData() {
-    Provider.of<GlobalProvider>(context, listen: false)
-        .updateStackIndex(context, 4);
+  uploadSuccessfullyData() {
+   /* Provider.of<GlobalProvider>(context, listen: false)
+        .updateStackIndex(context, 4);*/
 
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (_) => BottomNavBar(),
       ),
-      (route) => false,
+          (route) => false,
     );
   }
+
+  Future<void> uploadDataNow(BuildContext context, bool isForEdit) async {
+    loadingDialog(context);
+    for (var i = 0; i < layovers.length; i++) {
+      var element = layovers[i];
+      if (element.layoverLocation == null) {
+        Navigator.pop(context);
+        showMsg(context, 'Please provide layover airport name');
+      } else if (element.layover_date == null) {
+        Navigator.pop(context);
+        showMsg(context, 'Please enter layover landing date');
+        break;
+      } else if (element.layoverStarttime == null) {
+        Navigator.pop(context);
+        showMsg(context, 'Please enter layover start time');
+        break;
+      } else if (element.layoverEndTime == null) {
+        Navigator.pop(context);
+        showMsg(context, 'Please enter layover end time');
+        break;
+      } else {
+        try {
+          await profiles.doc(auth.currentUser!.uid).update({
+            'layoverDetails': {
+              'layoverCity': element.layoverLocation,
+              'layoverAirPort': element.layoverLocation,
+              'layoverLandingDate': element.layoverLocation,
+              'layoverLandingTime': element.layoverStarttime,
+              'layoverStayTime': element.layoverEndTime,
+            },
+          }).whenComplete(() {
+            if(i==layovers.length-1){
+              Navigator.pop(context);
+              print("Profile Update Successfully !");
+              isForEdit ? null : Provider.of<GlobalProvider>(context, listen: false).updateStackIndex(context, 6);
+              isForEdit ? showMsg(context, 'Successfully Updated!', bgColor: kSuccessColor,) : null;
+              uploadSuccessfullyData();
+            }
+          });
+
+        } on FirebaseAuthException catch (e) {
+          Navigator.pop(context);
+          showMsg(context, e.message.toString());
+        }
+      }
+    }
+  }
+
 }
 
 class LayoverInputWidget extends StatefulWidget {
@@ -432,10 +302,9 @@ class LayoverInputWidget extends StatefulWidget {
 
 class _LayoverInputWidgetState extends State<LayoverInputWidget> {
   final TextEditingController layoverDateController = TextEditingController();
-  final TextEditingController layoverStartTimeController =
-      TextEditingController();
-  final TextEditingController layoverEndTimeController =
-      TextEditingController();
+  final TextEditingController layoverStartTimeController = TextEditingController();
+  final TextEditingController layoverEndTimeController = TextEditingController();
+  String selectedAirPort = "";
 
   @override
   void initState() {
@@ -477,6 +346,7 @@ class _LayoverInputWidgetState extends State<LayoverInputWidget> {
               return airports;
             },
             onSelected: (String selectedValue) {
+              selectedAirPort = selectedValue;
               widget.updateThisLayover(
                   index: widget.index, layoverLocation: selectedValue);
             },
@@ -501,6 +371,8 @@ class _LayoverInputWidgetState extends State<LayoverInputWidget> {
                       setState(() {
                         layoverDateController.text =
                             DateFormat.yMMMd().format(value);
+                        widget.updateThisLayover(
+                            index: widget.index, layover_date: value);
                       });
                     },
                     onDoneTap: () {
@@ -544,6 +416,8 @@ class _LayoverInputWidgetState extends State<LayoverInputWidget> {
                             onDateTimeChanged: (value) {
                               layoverStartTimeController.text =
                                   DateFormat.jm().format(value);
+                              widget.updateThisLayover(
+                                  index: widget.index, layoverStarttime: value);
                             },
                             onDoneTap: () {
                               Navigator.pop(context);
@@ -590,6 +464,8 @@ class _LayoverInputWidgetState extends State<LayoverInputWidget> {
                           onDateTimeChanged: (value) {
                             layoverEndTimeController.text =
                                 DateFormat.jm().format(value);
+                            widget.updateThisLayover(
+                                index: widget.index, layoverEndTime: value);
                           },
                           onDoneTap: () {
                             Navigator.pop(context);
@@ -606,4 +482,6 @@ class _LayoverInputWidgetState extends State<LayoverInputWidget> {
       ),
     );
   }
+
+
 }

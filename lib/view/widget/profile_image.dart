@@ -1,4 +1,5 @@
 import 'package:air_tinder/constant/color.dart';
+import 'package:air_tinder/generated/assets.dart';
 import 'package:air_tinder/utils/loading.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ class ProfileImage extends StatelessWidget {
           height: size,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return loadingWidget(context, size: 30, color: loadingColor ?? kSecondaryColor);
+            return Image.asset(Assets.imagesUser);
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) {

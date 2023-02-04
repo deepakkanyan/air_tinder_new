@@ -58,26 +58,26 @@ class _CompletionCheckerState extends State<CompletionChecker> {
             isLoading = false;
             showMsg(context, 'Field Cannot Be Empty!');
           });
-        } else if (data['departureDetails'] == null) {
+        } /*else if (data['departureDetails'] == null) {
           print(" Checking profile data['departureDetails']: ${data['departureDetails']}");
           setState(() {
             _sProvider.stackIndex = 3;
             isLoading = false;
             showMsg(context, 'Please fill departure details');
           });
-        } else if (data['layoverDetails'] == null) {
+        } */else if (data['layoverDetails'] == null) {
           setState(() {
             _sProvider.stackIndex = 4;
             isLoading = false;
             showMsg(context, 'Please fill layover details');
           });
-        } else if (data['landingDetails'] == null) {
+        } /*else if (data['landingDetails'] == null) {
           setState(() {
             _sProvider.stackIndex = 5;
             isLoading = false;
             showMsg(context, 'Please fill landing details');
           });
-        } else {
+        }*/ else {
           await profiles.doc(auth.currentUser!.uid).get().then((value) {
             userDetailModel = UserDetailModel.fromJson(value.data() as Map<String, dynamic>);
             log(userDetailModel.profileImgUrl!);

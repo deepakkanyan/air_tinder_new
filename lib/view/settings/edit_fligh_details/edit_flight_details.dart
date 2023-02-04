@@ -35,26 +35,26 @@ class EditFlightDetails extends StatelessWidget {
                   userDetailModel = UserDetailModel.fromJson(
                     snapshot.data!.data() as Map<String, dynamic>,
                   );
-                  final String departureCity =
+            /*      final String departureCity =
                       userDetailModel.departureDetails!['departureCity'];
                   final String departureAirport =
-                      userDetailModel.departureDetails!['departureAirPort'];
+                      userDetailModel.departureDetails!['departureAirPort'];*/
 
                   final String layoverCity =
                       userDetailModel.layoverDetails!['layoverCity'];
                   final String layoverAirport =
                       userDetailModel.layoverDetails!['layoverAirPort'];
-
+/*
                   final String landingCity =
                       userDetailModel.landingDetails!['landingCity'];
                   final String landingAirport =
-                      userDetailModel.landingDetails!['landingAirport'];
+                      userDetailModel.landingDetails!['landingAirport'];*/
                   return Column(
                     children: [
                       SizedBox(
                         height: 10,
                       ),
-                      EditFlightTiles(
+                   /*   EditFlightTiles(
                         icon: Assets.imagesDeparture,
                         title:
                             'Flying from: $departureAirport Airport, $departureCity',
@@ -64,7 +64,7 @@ class EditFlightDetails extends StatelessWidget {
                             builder: (_) => EditTravellingDetails(),
                           ),
                         ),
-                      ),
+                      ),*/
                       EditFlightTiles(
                         icon: Assets.imagesPlaneSolid,
                         title:
@@ -76,7 +76,7 @@ class EditFlightDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      EditFlightTiles(
+                      /*EditFlightTiles(
                         icon: Assets.imagesPlaneArrival,
                         title:
                             'Landing at: $landingAirport Airport, $landingCity',
@@ -86,7 +86,7 @@ class EditFlightDetails extends StatelessWidget {
                             builder: (_) => EditLandingDetails(),
                           ),
                         ),
-                      ),
+                      ),*/
                     ],
                   );
                 } else {
