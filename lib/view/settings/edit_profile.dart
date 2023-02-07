@@ -41,7 +41,7 @@ class _EditProfileState extends State<EditProfile> {
   String selectedGender = '';
   int genderIndex = 0;
   List interests = [];
-  List<String> additionalImages = [];
+  List<dynamic> additionalImages = [];
 
   File? _pickedProfileImage;
   List<XFile> _additionalImages = [];
@@ -83,50 +83,50 @@ class _EditProfileState extends State<EditProfile> {
         _pickedProfileImage == null
             ? null
             : await _uploadProfileImage().then(
-                (value) async {
-                  await profiles.doc(uId).update({
-                    'profileImage': profileImage,
-                  });
-                  Navigator.pop(context);
-                  showMsg(
-                    context,
-                    'Profile picture updated successfully',
-                    bgColor: kSuccessColor,
-                  );
-                },
-              );
+              (value) async {
+            await profiles.doc(uId).update({
+              'profileImage': profileImage,
+            });
+            Navigator.pop(context);
+            showMsg(
+              context,
+              'Profile picture updated successfully',
+              bgColor: kSuccessColor,
+            );
+          },
+        );
         fullNameCon.text.isEmpty && fullNameCon.text == '' && fullNameCon.text != userDetailModel.fullName
             ? showMsg(context, 'Name cannot be empty!')
             : await profiles.doc(uId).update({
-                'fullName': fullNameCon.text,
-              }).then(
-                (value) {
-                  Navigator.pop(context);
-                  showMsg(
-                    context,
-                    'Name updated successfully',
-                    bgColor: kSuccessColor,
-                  );
-                },
-              );
+          'fullName': fullNameCon.text,
+        }).then(
+              (value) {
+            Navigator.pop(context);
+            showMsg(
+              context,
+              'Name updated successfully',
+              bgColor: kSuccessColor,
+            );
+          },
+        );
 
         selectedGender == userDetailModel.gender
             ? null
             : await profiles.doc(uId).update({
-                'gender': selectedGender,
-              }).then(
-                (value) {
-                  Navigator.pop(context);
-                  showMsg(
-                    context,
-                    'Gender updated successfully',
-                    bgColor: kSuccessColor,
-                  );
-                },
-              );
+          'gender': selectedGender,
+        }).then(
+              (value) {
+            Navigator.pop(context);
+            showMsg(
+              context,
+              'Gender updated successfully',
+              bgColor: kSuccessColor,
+            );
+          },
+        );
 
         await profiles.doc(userDetailModel.uId).get().then(
-          (value) {
+              (value) {
             setState(() {
               userDetailModel = UserDetailModel.fromJson(
                 value.data() as Map<String, dynamic>,
@@ -163,8 +163,8 @@ class _EditProfileState extends State<EditProfile> {
 
   Future _uploadProfileImage() async {
     Reference ref = await firebaseStorage.ref().child(
-          'images/profile image/${DateTime.now().toString()}',
-        );
+      'images/profile image/${DateTime.now().toString()}',
+    );
     await ref.putFile(_pickedProfileImage!);
     await ref.getDownloadURL().then((value) {
       log(value.toString());
@@ -192,8 +192,8 @@ class _EditProfileState extends State<EditProfile> {
   Future _uploadMultipleImage() async {
     for (int i = 0; i < _additionalImages.length; i++) {
       Reference ref = await firebaseStorage.ref().child(
-            'images/profile images/${DateTime.now().toString()}',
-          );
+        'images/profile images/${DateTime.now().toString()}',
+      );
       await ref.putFile(File(_additionalImages[i].path));
       await ref.getDownloadURL().then((value) {
         setState(() {
@@ -227,13 +227,14 @@ class _EditProfileState extends State<EditProfile> {
 
   void getUserData() {
     setState(() {
-      profileImage = userDetailModel.profileImgUrl!;
-      fullNameCon.text = userDetailModel.fullName!;
+      profileImage = userDetailModel.profileImgUrl ?? "";
+      fullNameCon.text = userDetailModel.fullName ?? "";
       userDetailModel.gender == 'Male' ? genderIndex = 0 : genderIndex = 1;
       genderIndex == 0 ? selectedGender = 'Male' : selectedGender = 'Female';
-      dobCon.text = userDetailModel.dateOfBirth!;
-      aboutCon.text = userDetailModel.about!;
-      interests = userDetailModel.interests!;
+      dobCon.text = userDetailModel.dateOfBirth ?? "";
+      aboutCon.text = userDetailModel.about ?? "";
+      interests = userDetailModel.interests ?? [];
+      additionalImages = userDetailModel.additionalImages ?? [];
     });
   }
 
@@ -271,16 +272,16 @@ class _EditProfileState extends State<EditProfile> {
             ),
             Row(
               children: List.generate(
-                userDetailModel.additionalImages!.isNotEmpty ? userDetailModel.additionalImages!.length : 3,
-                (index) {
-                  if (index < userDetailModel.additionalImages!.length) {
+                additionalImages.isNotEmpty ? additionalImages.length : 3,
+                    (index) {
+                  if (index < additionalImages.length) {
                     return UploadPhoto(
                       index: index,
                       // pickedImage: _additionalImages[index],
-                      imgURL: userDetailModel.additionalImages![index],
+                      imgURL: additionalImages[index],
                       onTap: () {},
                       onRemoveTap: () async {
-                        final imageUrl = userDetailModel.additionalImages![index];
+                        final imageUrl = additionalImages[index];
                         await profiles.doc(userDetailModel.uId).update(
                           {
                             'additionalImages': FieldValue.arrayRemove(
@@ -292,7 +293,7 @@ class _EditProfileState extends State<EditProfile> {
                         );
                         await firebaseStorage.refFromURL(imageUrl).delete();
                         setState(() {
-                          final imageUrl = userDetailModel.additionalImages![index];
+                          final imageUrl = additionalImages[index];
                         });
                       },
                     );
@@ -323,7 +324,7 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               children: List.generate(
                 2,
-                (index) {
+                    (index) {
                   return Padding(
                     padding: const EdgeInsets.only(
                       right: 15,
@@ -446,7 +447,7 @@ class _EditProfileState extends State<EditProfile> {
                   runSpacing: 10,
                   children: List.generate(
                     interests.length,
-                    (index) {
+                        (index) {
                       return interestCards(interests[index]);
                     },
                   ),
@@ -519,3 +520,4 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 }
+
