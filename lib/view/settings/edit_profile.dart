@@ -9,7 +9,6 @@ import 'package:air_tinder/utils/custom_flush_bar.dart';
 import 'package:air_tinder/utils/instances.dart';
 import 'package:air_tinder/utils/loading.dart';
 import 'package:air_tinder/view/settings/edit_interests.dart';
-import 'package:air_tinder/view/widget/custom_date_picker.dart';
 import 'package:air_tinder/view/widget/custom_dialog.dart';
 import 'package:air_tinder/view/widget/custom_dob_picker.dart';
 import 'package:air_tinder/view/widget/date_of_birthfield.dart';
@@ -83,50 +82,52 @@ class _EditProfileState extends State<EditProfile> {
         _pickedProfileImage == null
             ? null
             : await _uploadProfileImage().then(
-              (value) async {
-            await profiles.doc(uId).update({
-              'profileImage': profileImage,
-            });
-            Navigator.pop(context);
-            showMsg(
-              context,
-              'Profile picture updated successfully',
-              bgColor: kSuccessColor,
-            );
-          },
-        );
-        fullNameCon.text.isEmpty && fullNameCon.text == '' && fullNameCon.text != userDetailModel.fullName
+                (value) async {
+                  await profiles.doc(uId).update({
+                    'profileImage': profileImage,
+                  });
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Profile picture updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
+        fullNameCon.text.isEmpty &&
+                fullNameCon.text == '' &&
+                fullNameCon.text != userDetailModel.fullName
             ? showMsg(context, 'Name cannot be empty!')
             : await profiles.doc(uId).update({
-          'fullName': fullNameCon.text,
-        }).then(
-              (value) {
-            Navigator.pop(context);
-            showMsg(
-              context,
-              'Name updated successfully',
-              bgColor: kSuccessColor,
-            );
-          },
-        );
+                'fullName': fullNameCon.text,
+              }).then(
+                (value) {
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Name updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
 
         selectedGender == userDetailModel.gender
             ? null
             : await profiles.doc(uId).update({
-          'gender': selectedGender,
-        }).then(
-              (value) {
-            Navigator.pop(context);
-            showMsg(
-              context,
-              'Gender updated successfully',
-              bgColor: kSuccessColor,
-            );
-          },
-        );
+                'gender': selectedGender,
+              }).then(
+                (value) {
+                  Navigator.pop(context);
+                  showMsg(
+                    context,
+                    'Gender updated successfully',
+                    bgColor: kSuccessColor,
+                  );
+                },
+              );
 
         await profiles.doc(userDetailModel.uId).get().then(
-              (value) {
+          (value) {
             setState(() {
               userDetailModel = UserDetailModel.fromJson(
                 value.data() as Map<String, dynamic>,
@@ -146,7 +147,8 @@ class _EditProfileState extends State<EditProfile> {
 
   Future _getProfileImage(ImageSource source) async {
     try {
-      final img = await ImagePicker().pickImage(source: source, imageQuality: imageQuality);
+      final img = await ImagePicker()
+          .pickImage(source: source, imageQuality: imageQuality);
       if (img == null) {
         return;
       } else {
@@ -163,8 +165,8 @@ class _EditProfileState extends State<EditProfile> {
 
   Future _uploadProfileImage() async {
     Reference ref = await firebaseStorage.ref().child(
-      'images/profile image/${DateTime.now().toString()}',
-    );
+          'images/profile image/${DateTime.now().toString()}',
+        );
     await ref.putFile(_pickedProfileImage!);
     await ref.getDownloadURL().then((value) {
       log(value.toString());
@@ -192,8 +194,8 @@ class _EditProfileState extends State<EditProfile> {
   Future _uploadMultipleImage() async {
     for (int i = 0; i < _additionalImages.length; i++) {
       Reference ref = await firebaseStorage.ref().child(
-        'images/profile images/${DateTime.now().toString()}',
-      );
+            'images/profile images/${DateTime.now().toString()}',
+          );
       await ref.putFile(File(_additionalImages[i].path));
       await ref.getDownloadURL().then((value) {
         setState(() {
@@ -208,7 +210,8 @@ class _EditProfileState extends State<EditProfile> {
 
   void _removePhoto(int index) {
     setState(() {
-      _additionalImages.removeWhere((element) => element == _additionalImages[index]);
+      _additionalImages
+          .removeWhere((element) => element == _additionalImages[index]);
     });
   }
 
@@ -259,8 +262,10 @@ class _EditProfileState extends State<EditProfile> {
                   context: context,
                   builder: (context) {
                     return PickImage(
-                      pickFromCamera: () => _getProfileImage(ImageSource.camera),
-                      pickFromGallery: () => _getProfileImage(ImageSource.gallery),
+                      pickFromCamera: () =>
+                          _getProfileImage(ImageSource.camera),
+                      pickFromGallery: () =>
+                          _getProfileImage(ImageSource.gallery),
                     );
                   },
                   isScrollControlled: true,
@@ -273,7 +278,7 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               children: List.generate(
                 additionalImages.isNotEmpty ? additionalImages.length : 3,
-                    (index) {
+                (index) {
                   if (index < additionalImages.length) {
                     return UploadPhoto(
                       index: index,
@@ -324,7 +329,7 @@ class _EditProfileState extends State<EditProfile> {
             Row(
               children: List.generate(
                 2,
-                    (index) {
+                (index) {
                   return Padding(
                     padding: const EdgeInsets.only(
                       right: 15,
@@ -340,7 +345,9 @@ class _EditProfileState extends State<EditProfile> {
                             height: 21,
                             width: 21,
                             decoration: BoxDecoration(
-                              color: genderIndex == index ? kPrimaryColor : Colors.transparent,
+                              color: genderIndex == index
+                                  ? kPrimaryColor
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(2),
                               border: Border.all(
                                 color: kPrimaryColor,
@@ -350,7 +357,9 @@ class _EditProfileState extends State<EditProfile> {
                             child: Icon(
                               Icons.check,
                               size: 17,
-                              color: genderIndex == index ? kSecondaryColor : Colors.transparent,
+                              color: genderIndex == index
+                                  ? kSecondaryColor
+                                  : Colors.transparent,
                             ),
                           ),
                         ),
@@ -402,7 +411,8 @@ class _EditProfileState extends State<EditProfile> {
                       heading: "choose your birthday",
                       onDoneTap: () {
                         setState(() {
-                          dobCon.text = DateFormat.yMEd().format(_dateTime).toString();
+                          dobCon.text =
+                              DateFormat.yMEd().format(_dateTime).toString();
                         });
                         Navigator.pop(context);
                       },
@@ -447,7 +457,7 @@ class _EditProfileState extends State<EditProfile> {
                   runSpacing: 10,
                   children: List.generate(
                     interests.length,
-                        (index) {
+                    (index) {
                       return interestCards(interests[index]);
                     },
                   ),
@@ -486,7 +496,8 @@ class _EditProfileState extends State<EditProfile> {
                   builder: (_) {
                     return CustomDialog(
                       heading: 'Are you sure you want to delete your account?',
-                      content: 'All you data will be lost. You can create a new account later on.',
+                      content:
+                          'All you data will be lost. You can create a new account later on.',
                       onYesTap: () {},
                       onNoTap: () {},
                     );
@@ -520,4 +531,3 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 }
-
