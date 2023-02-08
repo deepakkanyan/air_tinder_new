@@ -48,19 +48,22 @@ class ChatHeads extends StatelessWidget {
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: BouncingScrollPhysics(),
-                      itemCount: snapshot.data!.docs.length,
+                      itemCount: snapshot.data?.docs.length,
                       padding: EdgeInsets.symmetric(horizontal: 7.5),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> doc = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                        String likesDocId = snapshot.data!.docs[index].id;
+                        Map<String, dynamic> doc = snapshot.data?.docs[index].data() as Map<String, dynamic>;
+                        String likesDocId = snapshot.data?.docs[index].id ?? "";
+                        String likedDoc = doc["liked"] == (userDetailModel.uId ?? "") ? doc["likedBy"] : doc["liked"];
+                        CollectionReference collReference = fireStore.collection('Profiles');
+                        if(likedDoc.isNotEmpty){
+                          collReference.doc(likedDoc);
+                        }
                         return FutureBuilder(
-                          future: fireStore
-                              .collection('Profiles')
-                              .doc(doc["liked"] == (userDetailModel.uId ?? '') ? doc["likedBy"] : doc["liked"])
+                          future: collReference
                               .get(),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData) {
+                            if (snapshot.hasData && snapshot is DocumentSnapshot) {
                               DocumentSnapshot documentSnapshot = snapshot.data as DocumentSnapshot;
                               UserDetailModel otherUserModel =
                                   UserDetailModel.fromJson(documentSnapshot.data() as Map<String, dynamic>);
@@ -72,7 +75,7 @@ class ChatHeads extends StatelessWidget {
                                     await chatProvider.getChatRooms(context, otherUserModel, likesDocId);
                                   },
                                   child: ProfileImage(
-                                    imgURL: otherUserModel.profileImgUrl!,
+                                    imgURL: otherUserModel.profileImgUrl ?? "",
                                     size: 55,
                                   ),
                                 ),
@@ -113,12 +116,12 @@ class ChatHeads extends StatelessWidget {
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: BouncingScrollPhysics(),
-                    itemCount: snapshot.data!.docs.length,
+                    itemCount: snapshot.data?.docs.length,
                     itemBuilder: (context, index) {
                       ChatRoomModel chatHeadModel =
-                          ChatRoomModel.fromJson(snapshot.data!.docs[index].data() as Map<String, dynamic>);
+                          ChatRoomModel.fromJson(snapshot.data?.docs[index].data() as Map<String, dynamic>);
                       List<dynamic> _participants = chatHeadModel.participants;
-                      log("current user uid :  ${auth.currentUser!.uid}");
+                      log("current user uid :  ${auth.currentUser?.uid}");
                       log("_participants ${_participants}");
 
                       return FutureBuilder(
@@ -135,7 +138,7 @@ class ChatHeads extends StatelessWidget {
                             // log("otherUserModel  ${otherUserModel.toJson()}");
                             return ChatHeadsTiles(
                               imageURL: otherUserModel.profileImgUrl!,
-                              name: otherUserModel.fullName!,
+                              name: otherUserModel.fullName ?? "",
                               lastMsg: chatHeadModel.lastMsg ?? "",
                               time: chatHeadModel.lstMsgTime ?? "",
                               onTap: () => Navigator.push(
