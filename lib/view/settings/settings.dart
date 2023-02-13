@@ -85,39 +85,39 @@ class _SettingsState extends State<Settings> {
               color: kPrimaryColor,
               paddingBottom: 8,
             ),
-            // Row(
-            //   children: [
-            //     MyText(
-            //       text: 'Free plan, ',
-            //       size: 14,
-            //       weight: FontWeight.w300,
-            //       color: kPrimaryColor,
-            //     ),
-            //     MyText(
-            //       onTap: () {
-            //         showDialog(
-            //           context: context,
-            //           builder: (_) {
-            //             return JetLatchPlusDialog();
-            //           },
-            //         );
-            //       },
-            //       text: ' Upgrade now!',
-            //       size: 14,
-            //       decoration: TextDecoration.underline,
-            //       weight: FontWeight.w700,
-            //       color: Color(0xffFFDD00),
-            //     ),
-            //   ],
-            // ),
-            // MyText(
-            //   paddingTop: 10,
-            //   paddingBottom: 8,
-            //   text: age.isNegative ? age.toString().substring(1, 3) : age,
-            //   size: 16,
-            //   weight: FontWeight.w500,
-            //   color: kPrimaryColor,
-            // ),
+            Row(
+              children: [
+                MyText(
+                  text: 'Free plan, ',
+                  size: 14,
+                  weight: FontWeight.w300,
+                  color: kPrimaryColor,
+                ),
+                MyText(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) {
+                        return JetLatchPlusDialog();
+                      },
+                    );
+                  },
+                  text: ' Upgrade now!',
+                  size: 14,
+                  decoration: TextDecoration.underline,
+                  weight: FontWeight.w700,
+                  color: Color(0xffFFDD00),
+                ),
+              ],
+            ),
+            MyText(
+              paddingTop: 10,
+              paddingBottom: 8,
+              text: age.isNegative ? age.toString().substring(1, 3) : age,
+              size: 16,
+              weight: FontWeight.w500,
+              color: kPrimaryColor,
+            ),
             SizedBox(
               height: 15,
             ),
