@@ -186,7 +186,7 @@ class _HomeState extends State<Home> {
                                     UserDetailModel.fromJson(docSnapShot.data() as Map<String, dynamic>);
 
                                 if(tUDM.additionalImages == null){
-                                  return Text("data");
+                                  return Text("");
                                 }
                                 return  SwipeAbleCards(
                                   images: tUDM.additionalImages!,
