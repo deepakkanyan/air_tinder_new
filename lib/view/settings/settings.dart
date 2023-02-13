@@ -110,14 +110,14 @@ class _SettingsState extends State<Settings> {
                 ),
               ],
             ),
-            MyText(
-              paddingTop: 10,
-              paddingBottom: 8,
-              text: age.isNegative ? age.toString().substring(1, 3) : age,
-              size: 16,
-              weight: FontWeight.w500,
-              color: kPrimaryColor,
-            ),
+            // MyText(
+            //   paddingTop: 10,
+            //   paddingBottom: 8,
+            //   text: curr.isNegative ? age.toString().substring(1, 3) : age,
+            //   size: 16,
+            //   weight: FontWeight.w500,
+            //   color: kPrimaryColor,
+            // ),
             SizedBox(
               height: 15,
             ),
